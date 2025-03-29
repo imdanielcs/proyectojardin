@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Bienvenido al Panel de Gestión</h1>
+    <button onclick="cerrarSesion()">Cerrar Sesión</button>
+
+    <script>
+        if (!localStorage.getItem("token")) {
+            window.location.href = "/login.html";
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+    </script>
+</body>
+</html>

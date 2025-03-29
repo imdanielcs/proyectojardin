@@ -1,46 +1,68 @@
-const express = require('express');
-const mysql = require('mysql2');
+const express = require("express");
+const mysql = require("mysql2");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const app = express();
-const PORT = 3000;
+app.use(express.json());
+app.use(express.static("public"));
 
-// Configuración de la conexión a MySQL
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'DanielDennisse_123', 
-    database: 'jardin_db'
+    host: "localhost",
+    user: "root",
+    password: "DanielDennisse_123",
+    database: "jardin_db"
 });
-
 
 connection.connect(err => {
     if (err) {
-        console.error('❌ Error conectando a MySQL:', err);
+        console.error("Error conectando a MySQL:", err);
         return;
     }
-    console.log('✅ Conectado a MySQL correctamente');
+    console.log("Conectado a MySQL correctamente");
 });
 
+// Endpoint de Login
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
 
-app.use(express.static('public'));
+    const sql = "SELECT * FROM admin WHERE username = ?";
+    connection.query(sql, [username], async (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: "Error del servidor" });
 
-// Ruta principal 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
-});
+        if (results.length > 0) {
+            const user = results[0];
+            const match = await bcrypt.compare(password, user.password);
 
-// Ruta de prueba para obtener datos desde MySQL
-app.get('/api/alumnos', (req, res) => {
-    connection.query('SELECT * FROM alumnos', (err, results) => {
-        if (err) {
-            res.status(500).json({ error: 'Error obteniendo alumnos' });
-            return;
+            if (match) {
+                const token = jwt.sign({ userId: user.id }, "secreto", { expiresIn: "1h" });
+                return res.json({ success: true, token });
+            }
         }
-        res.json(results);
+        res.json({ success: false, message: "Usuario o contraseña incorrectos" });
     });
 });
 
-// Iniciar el servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+app.listen(3000, () => {
+    console.log("Servidor corriendo en http://localhost:3000");
 });
+
+
+const verificarToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) return res.status(401).json({ success: false, message: "Acceso denegado" });
+
+    jwt.verify(token, "secreto", (err, decoded) => {
+        if (err) return res.status(401).json({ success: false, message: "Token inválido" });
+
+        req.userId = decoded.userId;
+        next();
+    });
+};
+
+// Proteger el acceso al dashboard
+app.get("/dashboard", verificarToken, (req, res) => {
+    res.sendFile(__dirname + "/public/dashboard.html");
+});
+

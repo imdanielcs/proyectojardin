@@ -3,21 +3,30 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
+    const errorMessage = document.getElementById("errorMessage");
 
-    const response = await fetch("/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, password })
-    });
+    try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    if (data.success) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/registro.html"; 
-    } else {
-        document.getElementById("errorMessage").style.display = "block";
+        if (response.ok && data.success) {
+            window.location.href = "/index.html"; // Redirigir si el login es exitoso al index
+        } else {
+            errorMessage.textContent = data.message || "Usuario o contraseña incorrectos";
+            errorMessage.style.display = "block"; // 
+        }
+    } catch (error) {
+        console.error("Error en el login:", error);
+        errorMessage.textContent = "Error en el servidor. Intenta de nuevo.";
+        errorMessage.style.display = "block";
     }
+
+  
 });
+
+   

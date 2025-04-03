@@ -15,7 +15,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         const data = await response.json();
 
         if (response.ok && data.success) {
-            window.location.href = "/index.html"; // Redirigir si el login es exitoso al index
+            window.location.href = "/registro.html"; // Redirigir si el login es exitoso al index
         } else {
             errorMessage.textContent = data.message || "Usuario o contraseña incorrectos";
             errorMessage.style.display = "block"; // 

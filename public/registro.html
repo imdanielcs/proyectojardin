@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Bienvenido al Registro</h1>
+    </header>
+    <main>
+        <label for="tipoUsuario">Tipo de Usuario:</label>
+        <select id="tipoUsuario" name="tipoUsuario" required>
+            <option value="docente">Docente</option>
+            <option value="alumno">Alumno</option>
+            <option value="apoderado">Apoderado</option>
+        </select>
+        <button type="button" id="registrarBtn">Continuar</button>
+
+        
+        <div id="formularioContainer"></div>
+    </main>
+    <footer>
+        <p>Proyecto Jardín</p>
+    </footer>
+    <script src="registro.js"></script>
+</body>
+</html>

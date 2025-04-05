@@ -14,19 +14,19 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         const data = await response.json();
 
-        if (response.ok && data.success) {
-            window.location.href = "/registro.html"; // Redirigir si el login es exitoso al index
+        if (response.ok && data.token) {
+            // Guardo el token en localStorage
+            // Si cierro y vuelvo a abrir el navegador, el token se borra.
+            localStorage.setItem("authToken", data.token);
+            window.location.href = "/registro.html"; 
         } else {
             errorMessage.textContent = data.message || "Usuario o contraseña incorrectos";
-            errorMessage.style.display = "block"; // 
+            errorMessage.style.display = "block";
         }
     } catch (error) {
         console.error("Error en el login:", error);
         errorMessage.textContent = "Error en el servidor. Intenta de nuevo.";
         errorMessage.style.display = "block";
     }
-
-  
 });
 
-   

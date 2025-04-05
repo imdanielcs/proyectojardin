@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const token = localStorage.getItem("authToken");
+
+            if (!token) {
+                alert("No tienes acceso. Por favor, inicia sesión.");
+                window.location.href = "/login.html"; 
+            }
+        });
+    </script>
     <header>
         <h1>Bienvenido al Registro</h1>
     </header>

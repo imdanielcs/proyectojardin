@@ -1,9 +1,12 @@
 const express = require("express");
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+
 
 const app = express();
+const port = 3000;
+const SECRET_KEY = process.env.SECRET_KEY || "grupo_3";
+
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -22,66 +25,54 @@ connection.connect(err => {
     console.log("Conectado a MySQL correctamente");
 });
 
-const session = require('express-session');
 
-app.use(session({
-    secret: 'mi_clave_secreta', // Usa una clave secreta para firmar las cookies de sesión
-    resave: false,              // No volver a guardar la sesión si no ha sido modificada
-    saveUninitialized: true,    // Guardar sesiones aún si no están inicializadas
-    cookie: { secure: false }   // Si usas HTTPS, cambia secure: true
-}));
-
-// Endpoint de Login
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
-    const sql = "SELECT * FROM admin WHERE username = ?";
-    
-    connection.query(sql, [username], async (err, results) => {
-
-        if (err) return res.status(500).json({ success: false, message: "Error del servidor" });
+   
+    const query = "SELECT * FROM admin WHERE username = ?";
+    connection.query(query, [username], (err, results) => {
+        if (err) {
+            console.error("Error al consultar la base de datos:", err);
+            return res.status(500).json({ message: "Error en el servidor" });
+        }
 
         if (results.length === 0) {
-            return res.status(401).json({ success: false, message: "error desde la base de datos Usuario o contraseña incorrectos" });
+            return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
         }
 
         const user = results[0];
+
         
         if (password !== user.password) {
-            return res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos" });
+            return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
         }
 
-        // Guardar información en la sesión
-        req.session.id_admin = user.id_admin;
-        req.session.username = user.username;
-        req.session.password = user.password;
-        console.log(user.id_admin);
-        console.log(user.username);
-
-        res.json({ success: true });
+        // Generar un token JWT
+        const token = jwt.sign({ username: user.username }, SECRET_KEY, { expiresIn: "1h" });
+        res.json({ token });
     });
 });
 
-app.listen(3000, () => {
-    console.log("Servidor corriendo en http://localhost:3000");
-});
+// Middleware para proteger rutas
+function authenticateToken(req, res, next) {
+    const token = req.headers["authorization"]?.split(" ")[1];
 
+    if (!token) return res.status(403).json({ message: "Acceso denegado" });
 
-const verificarToken = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) return res.status(401).json({ success: false, message: "Acceso denegado" });
-
-    jwt.verify(token, "secreto", (err, decoded) => {
-        if (err) return res.status(401).json({ success: false, message: "Token inválido" });
-
-        req.userId = decoded.userId;
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).json({ message: "Token inválido" });
+        req.user = user;
         next();
     });
-};
+}
 
-// Proteger el acceso al dashboard
-/*app.get("/dashboard", verificarToken, (req, res) => {
-    res.sendFile(__dirname + "/public/dashboard.html");
-});*/
 
+// Ruta protegida de ejemplo
+app.get("/registro", authenticateToken, (req, res) => {
+    res.json({ message: "Acceso permitido", user: req.user });
+});
+
+app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
+});

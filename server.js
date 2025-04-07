@@ -76,3 +76,33 @@ app.get("/registro", authenticateToken, (req, res) => {
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
+app.post('/api/docentes', (req, res) => {
+    const docente = req.body;
+
+   
+    if (!docente.rutDocente || !docente.nombreDocente || !docente.apellidoDocente || !docente.fonoDocente || !docente.cursoDocente) {
+        return res.status(400).send({ message: "Los campos rutDocente, nombreDocente, apellidoDocente, fonoDocente y cursoDocente son obligatorios" });
+    }
+
+    
+    console.log("Datos recibidos para docente:", docente);
+
+    const query = "INSERT INTO docente (rut_docente, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    connection.query(query, [
+        docente.rutDocente,
+        docente.nombreDocente,
+        docente.apellidoDocente,
+        docente.fonoDocente,
+        docente.emailDocente || null, 
+        docente.direccionDocente || null, 
+        docente.cursoDocente
+    ], (err, results) => {
+        if (err) {
+            console.error("Error al insertar en la tabla docente:", err);
+            return res.status(500).send({ message: "Error al registrar el docente" });
+        }
+        res.status(201).send({ message: 'Docente registrado exitosamente' });
+    });
+});
+

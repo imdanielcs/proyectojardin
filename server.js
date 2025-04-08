@@ -106,3 +106,33 @@ app.post('/api/docentes', (req, res) => {
     });
 });
 
+app.post('/api/alumnos', (req, res) => {
+    const alumno = req.body;
+
+   
+    if (!alumno.rutAlumno || !alumno.nombreAlumno || !alumno.apellidoAlumno || !alumno.cursoAlumno || !alumno.rutApoderadoUno || !alumno.nombreApoderadoUno) {
+        return res.status(400).send({ message: "Los campos Rut, Nombre, Apellido, Curso y el Rut y nombre del apoderado son obligatorios" });
+    }
+
+    
+    console.log("Datos recibidos para alumno:", alumno);
+
+    const query = "INSERT INTO alumno (rut_alumno, nombre, apellido, observacion, curso_id_curso, rut_apoderado_uno, rut_apoderado_dos, nombre_apoderado_uno, nombre_apoderado_dos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    connection.query(query, [
+        alumno.rutAlumno,
+        alumno.nombreAlumno,
+        alumno.apellidoAlumno,
+        alumno.observacionAlumno || null,
+        alumno.cursoAlumno,
+        alumno.rutApoderadoUno || null,
+        alumno.rutApoderadoDos || null,
+        alumno.nombreApoderadoUno || null,
+        alumno.nombreApoderadoDos || null
+    ], (err, results) => {
+        if (err) {
+            console.error("Error al insertar en la tabla alumno:", err);
+            return res.status(500).send({ message: "Error al registrar el alumno" });
+        }
+        res.status(201).send({ message: 'Alumno registrado exitosamente' });
+    });
+});

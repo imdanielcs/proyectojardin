@@ -23,6 +23,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         <input type="text" id="rutDocente" name="rutDocente" class="form-control" required>
                     </div>
                     <div class="mb-3">
+                    <div class="mb-3">
+                        <label for="passwordDocente" class="form-label">Contraseña:</label>
+                        <input type="text" id="passwordDocente" name="passwordDocente" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="nombreDocente" class="form-label">Nombre:</label>
                         <input type="text" id="nombreDocente" name="nombreDocente" class="form-control" required>
                     </div>

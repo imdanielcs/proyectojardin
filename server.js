@@ -81,16 +81,17 @@ app.post('/api/docentes', (req, res) => {
     const docente = req.body;
 
    
-    if (!docente.rutDocente || !docente.nombreDocente || !docente.apellidoDocente || !docente.fonoDocente || !docente.cursoDocente) {
-        return res.status(400).send({ message: "Los campos rutDocente, nombreDocente, apellidoDocente, fonoDocente y cursoDocente son obligatorios" });
-    }
+    //if (!docente.rutDocente  || !docente.password || !docente.nombreDocente || !docente.apellidoDocente || !docente.fonoDocente || !docente.cursoDocente) {
+    //    return res.status(400).send({ message: "Los campos rutDocente, passwordDocente, nombreDocente, apellidoDocente, fonoDocente y cursoDocente son obligatorios" });
+    //}
 
     
     console.log("Datos recibidos para docente:", docente);
 
-    const query = "INSERT INTO docente (rut_docente, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO docente (rut_docente, password, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     connection.query(query, [
         docente.rutDocente,
+        docente.passwordDocente,
         docente.nombreDocente,
         docente.apellidoDocente,
         docente.fonoDocente,

@@ -1,0 +1,15 @@
+Debemos haceer cambios en la tabla de alumno. agregando a los apoderados, correos ya que mandaremos correos.
+Se agregaran las siguientes columnas:
+-fono1
+-fono2
+-email1
+-email2
+-direccion
+
+para eso este el script de modificacion es este:
+ALTER TABLE alumno
+ADD COLUMN fono1 varchar(20) DEFAULT NULL,
+ADD COLUMN fono2 varchar(20) DEFAULT NULL,
+ADD COLUMN email1 varchar(20) DEFAULT NULL,
+ADD COLUMN email2 varchar(20) DEFAULT NULL,
+ADD COLUMN direccion varchar(20) DEFAULT NULL; 

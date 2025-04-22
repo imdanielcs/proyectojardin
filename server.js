@@ -79,59 +79,86 @@ app.listen(port, () => {
 
 app.post('/api/docentes', (req, res) => {
     const docente = req.body;
+    console.log("Datos recibidos para docente:", docente);
 
-   
-    //if (!docente.rutDocente  || !docente.password || !docente.nombreDocente || !docente.apellidoDocente || !docente.fonoDocente || !docente.cursoDocente) {
-    //    return res.status(400).send({ message: "Los campos rutDocente, passwordDocente, nombreDocente, apellidoDocente, fonoDocente y cursoDocente son obligatorios" });
-    //}
+    // Validación de campos requeridos
+    if (!docente.rutDocente || !docente.nombreDocente || !docente.apellidoDocente || 
+        !docente.fono1 || !docente.email1) {
+        return res.status(400).send({
+            message: "Los campos RUT, nombre, apellido, teléfono y email son obligatorios"
+        });
+    }
 
-
-    const query = "INSERT INTO docente (rut_docente, password, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO docente (rut_docente, nombre, apellido, fono1, fono2, email1, email2, direccion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    
     connection.query(query, [
         docente.rutDocente,
-        docente.passwordDocente,
         docente.nombreDocente,
         docente.apellidoDocente,
-        docente.fonoDocente,
-        docente.emailDocente || null, 
-        docente.direccionDocente || null, 
-        docente.cursoDocente
+        docente.fono1,
+        docente.fono2 || null,
+        docente.email1,
+        docente.email2 || null,
+        docente.direccion || null
     ], (err, results) => {
         if (err) {
             console.error("Error al insertar en la tabla docente:", err);
             return res.status(500).send({ message: "Error al registrar el docente" });
         }
+        console.log("Docente registrado exitosamente:", results);
         res.status(201).send({ message: 'Docente registrado exitosamente' });
     });
 });
 
 app.post('/api/alumnos', (req, res) => {
     const alumno = req.body;
-
-   
-    if (!alumno.rutAlumno || !alumno.nombreAlumno || !alumno.apellidoAlumno || !alumno.cursoAlumno || !alumno.rutApoderadoUno || !alumno.nombreApoderadoUno) {
-        return res.status(400).send({ message: "Los campos Rut, Nombre, Apellido, Curso y el Rut y nombre del apoderado son obligatorios" });
-    }
-
     
     console.log("Datos recibidos para alumno:", alumno);
 
-    const query = "INSERT INTO alumno (rut_alumno, nombre, apellido, observacion, curso_id_curso, rut_apoderado_uno, rut_apoderado_dos, nombre_apoderado_uno, nombre_apoderado_dos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    connection.query(query, [
-        alumno.rutAlumno,
-        alumno.nombreAlumno,
-        alumno.apellidoAlumno,
-        alumno.observacionAlumno || null,
-        alumno.cursoAlumno,
-        alumno.rutApoderadoUno || null,
-        alumno.rutApoderadoDos || null,
-        alumno.nombreApoderadoUno || null,
-        alumno.nombreApoderadoDos || null
-    ], (err, results) => {
+    // Validación básica de campos requeridos
+    if (!alumno.rutAlumno || !alumno.nombreAlumno || !alumno.apellidoAlumno || 
+        !alumno.cursoAlumno || !alumno.rutApoderadoUno || !alumno.nombreApoderadoUno || 
+        !alumno.fono1 || !alumno.email1) {
+        return res.status(400).send({ 
+            message: "Los campos RUT, nombre, apellido, curso, y datos del apoderado principal (RUT, nombre, teléfono y email) son obligatorios" 
+        });
+    }
+
+    // Primero verificamos que el curso existe
+    const checkCursoQuery = "SELECT id_curso FROM curso WHERE id_curso = ?";
+    connection.query(checkCursoQuery, [alumno.cursoAlumno], (err, results) => {
         if (err) {
-            console.error("Error al insertar en la tabla alumno:", err);
-            return res.status(500).send({ message: "Error al registrar el alumno" });
+            console.error("Error al verificar el curso:", err);
+            return res.status(500).send({ message: "Error al verificar el curso" });
         }
-        res.status(201).send({ message: 'Alumno registrado exitosamente' });
+
+        if (results.length === 0) {
+            return res.status(400).send({ message: "El curso especificado no existe" });
+        }
+
+        // Si el curso existe, procedemos con el registro
+        const query = "INSERT INTO alumno (rut_alumno, nombre, apellido, observacion, curso_id_curso, rut_apoderado_uno, nombre_apoderado_uno, rut_apoderado_dos, nombre_apoderado_dos, fono1, fono2, email1, email2, direccion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        connection.query(query, [
+            alumno.rutAlumno,
+            alumno.nombreAlumno,
+            alumno.apellidoAlumno,
+            alumno.observacionAlumno || null,
+            alumno.cursoAlumno,
+            alumno.rutApoderadoUno,
+            alumno.nombreApoderadoUno,
+            alumno.rutApoderadoDos || null,
+            alumno.nombreApoderadoDos || null,
+            alumno.fono1,
+            alumno.fono2 || null,
+            alumno.email1,
+            alumno.email2 || null,
+            alumno.direccion || null
+        ], (err, results) => {
+            if (err) {
+                console.error("Error al insertar en la tabla alumno:", err);
+                return res.status(500).send({ message: "Error al registrar el alumno" });
+            }
+            res.status(201).send({ message: 'Alumno registrado exitosamente' });
+        });
     });
 });

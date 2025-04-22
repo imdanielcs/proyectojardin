@@ -3,28 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Registro - Sistema de Gestión</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-light">
-    <header class="bg-primary text-white text-center py-3">
-        <h1>Bienvenido al Registro</h1>
-    </header>
-    <main class="container my-4">
-        <div class="mb-3">
-            <label for="tipoUsuario" class="form-label">Tipo de Usuario:</label>
-            <select id="tipoUsuario" name="tipoUsuario" class="form-select" required>
-                <option value="docente">Docente</option>
-                <option value="alumno">Alumno</option>
-            </select>
+<body>
+    <div class="container">
+        <!-- Menú lateral -->
+        <div class="sidebar">
+            <h2 onclick="showWelcomeScreen()">Menú</h2>
+            <ul class="sidebar-menu">
+                <li><button onclick="showForm('docente')"><i class="fas fa-chalkboard-teacher"></i> Registrar Docente</button></li>
+                <li><button onclick="showForm('alumno')"><i class="fas fa-child"></i> Registrar Alumno</button></li>
+                <li><button onclick="showForm('docentes')"><i class="fas fa-user-friends"></i> Buscar Docentes</button></li>
+                <li><button onclick="showForm('entrada-salida')"><i class="fas fa-door-open"></i> Entrada y Salida de Alumnos</button></li>
+                <li><button onclick="showForm('asistencia-curso')"><i class="fas fa-clipboard-list"></i> Asistencia y Datos del Curso</button></li>
+                <li><button onclick="showForm('comunicar-apoderado')"><i class="fas fa-comments"></i> Comunicar con Apoderado</button></li>
+                <li><button class="logout-button" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button></li>
+            </ul>
         </div>
-        <button type="button" id="registrarBtn" class="btn btn-success">Continuar</button>
-        <div id="formularioContainer" class="mt-4"></div>
-    </main>
-    <footer class="bg-dark text-white text-center py-3">
-        <p>Proyecto Jardín</p>
-    </footer>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <!-- Pantalla de bienvenida -->
+            <div id="welcome-screen" class="welcome-screen">
+                <h1>Bienvenido al Jardín Infantil Huellita</h1>
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <h3>150</h3>
+                        <p>Alumnos</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>12</h3>
+                        <p>Profesores</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>6</h3>
+                        <p>Salas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <!-- Formulario de Docente -->
+                <div id="docente-form" class="form-section">
+                    <h2>Registro de Docente</h2>
+                    <div id="mensaje-estado"></div>
+                    <form id="formDocente">
+                        <div class="form-row">
+                            <label for="rutDocente">Rut:</label>
+                            <input type="text" id="rutDocente" name="rutDocente" required>
+                            <span class="error-message" id="error-rutDocente"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="passwordDocente">Password:</label>
+                            <input type="password" id="password" name="passwordDocente" required>
+                            <span class="error-message" id="error-password"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="nombreDocente">Nombre:</label>
+                            <input type="text" id="nombreDocente" name="nombreDocente" required>
+                            <span class="error-message" id="error-nombreDocente"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="apellidoDocente">Apellido:</label>
+                            <input type="text" id="apellidoDocente" name="apellidoDocente" required>
+                            <span class="error-message" id="error-apellidoDocente"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="fonoDocente">Fono:</label>
+                            <input type="tel" id="fonoDocente" name="fonoDocente" required>
+                            <span class="error-message" id="error-fonoDocente"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="emailDocente">Email:</label>
+                            <input type="email" id="emailDocente" name="emailDocente" required>
+                            <span class="error-message" id="error-emailDocente"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="direccionDocente">Dirección:</label>
+                            <input type="text" id="direccionDocente" name="direccionDocente" required>
+                            <span class="error-message" id="error-direccionDocente"></span>
+                        </div>
+                        <div class="form-row">
+                            <label for="curso">Curso:</label>
+                            <input type="text" id="cursoDocente" name="cursoDocente" required>
+                            <span class="error-message" id="error-cursoDocente"></span>
+                        </div>
+                        <button type="submit" class="registrar-button" id="btn-registrar">Registrar Docente</button>
+                    </form>
+                </div>
+
+                <!-- Formulario de Alumno -->
+                <div id="alumno-form" class="form-section">
+                    <h2>Registro de Alumno</h2>
+                    <form id="formAlumno">
+                        <div class="form-row">
+                            <label for="rutAlumno">Rut:</label>
+                            <input type="text" id="rutAlumno" name="rutAlumno" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="nombreAlumno">Nombre:</label>
+                            <input type="text" id="nombreAlumno" name="nombreAlumno" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="apellidoAlumno">Apellido:</label>
+                            <input type="text" id="apellidoAlumno" name="apellidoAlumno" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="observacionAlumno">Observación:</label>
+                            <input type="text" id="observacionAlumno" name="observacionAlumno" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="fotoAlumno">Foto del Alumno:</label>
+                            <input type="file" id="fotoAlumno" name="fotoAlumno" accept="image/*" required>
+                        </div>
+                        <div class="form-row">
+                            <label></label>
+                            <img id="previewFoto" class="image-preview">
+                        </div>
+                         <div class="form-row">
+                            <label for="rutApoderado">Rut:</label>
+                            <input type="text" id="rutApoderado" name="rutApoderado" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="nombreApoderado">Nombre:</label>
+                            <input type="text" id="nombreApoderado" name="nombreApoderado" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="apellidoApoderado">Apellido:</label>
+                            <input type="text" id="apellidoApoderado" name="apellidoApoderado" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="fonoApoderado">Fono:</label>
+                            <input type="tel" id="fonoApoderado" name="fonoApoderado" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="emailApoderado">Email:</label>
+                            <input type="email" id="emailApoderado" name="emailApoderado" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="direccionApoderado">Dirección:</label>
+                            <input type="text" id="direccionApoderado" name="direccionApoderado" required>
+                        </div>
+                        <button type="submit" class="login-button">Registrar Apoderado</button>
+                    </form>
+                <br>
+                </div>
+
+                <!-- Buscar docentes -->
+                <div id="docentes-form" class="form-section">
+         
+                    <h2 >Lista de Docentes</h2>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                        <tr style="background-color: #ecf0f1;">
+                            <th style="padding: 12px; text-align: left;">Nombre</th>
+                            <th style="padding: 12px; text-align: left;">RUT</th>
+                            <th style="padding: 12px; text-align: left;">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr >
+                            <td style="padding: 12px;">María López</td>
+                            <td style="padding: 12px;">12.345.678-9</td>
+                            <td style="padding: 12px;">
+                            <button class="btn-entrada" onclick="actualizarDocente('María López')">Actualizar</button>
+                            <button class="btn-salida" onclick="confirmarEliminacion('María López')">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td style="padding: 12px;">Carlos Pérez</td>
+                            <td style="padding: 12px;">11.223.344-5</td>
+                            <td style="padding: 12px;">
+                            <button class="btn-entrada" onclick="actualizarDocente('Carlos Pérez')">Actualizar</button>
+                            <button class="btn-salida" onclick="confirmarEliminacion('Carlos Pérez')">Eliminar</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                  
+                </div>
+
+                <!-- Formulario de Comunicación con Apoderado -->
+                <div id="comunicar-apoderado-form" class="form-section">
+                    <h2>Comunicación con Apoderado</h2>
+                    <form id="formComunicarApoderado">
+                        <div class="form-row">
+                            <label for="alumnoComunicacion">Seleccionar Alumno:</label>
+                            <select id="alumnoComunicacion" name="alumnoComunicacion" required>
+                                <option value="">Seleccione un alumno</option>
+                                <!-- Aquí se cargarán los alumnos dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>Datos del Apoderado:</label>
+                            <div class="apoderado-info">
+                                <p><strong>Nombre:</strong> <span id="nombreApoderado">-</span></p>
+                                <p><strong>Teléfono:</strong> <span id="telefonoApoderado">-</span></p>
+                                <p><strong>Email:</strong> <span id="emailApoderado">-</span></p>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label for="tipoComunicacion">Tipo de Comunicación:</label>
+                            <select id="tipoComunicacion" name="tipoComunicacion" required>
+                                <option value="informacion">Información General</option>
+                                <option value="emergencia">Emergencia</option>
+                                <option value="reunion">Solicitud de Reunión</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="mensajeComunicacion">Mensaje:</label>
+                            <textarea id="mensajeComunicacion" name="mensajeComunicacion" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="login-button">Enviar Comunicación</button>
+                    </form>
+                </div>
+
+                <!-- Formulario de Entrada y Salida de Alumnos -->
+                <div id="entrada-salida-form" class="form-section">
+                    <h2>Registro de Entrada y Salida de Alumnos</h2>
+                    <div class="alumnos-grid">
+                        <!-- Alumno 1 -->
+                        <div class="alumno-card">
+                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
+                            <h3 class="alumno-nombre">Juan Pérez</h3>
+                            <div class="alumno-buttons">
+                                <button class="btn-entrada" onclick="registrarEntrada('1')">
+                                    <i class="fas fa-sign-in-alt"></i> Entrada
+                                </button>
+                                <button class="btn-salida" onclick="registrarSalida('1')">
+                                    <i class="fas fa-sign-out-alt"></i> Salida
+                                </button>
+                            </div>
+                            <p class="estado-hora" id="estado-1">Última entrada: 08:30</p>
+                        </div>
+
+                        <!-- Alumno 2 -->
+                        <div class="alumno-card">
+                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
+                            <h3 class="alumno-nombre">María González</h3>
+                            <div class="alumno-buttons">
+                                <button class="btn-entrada" onclick="registrarEntrada('2')">
+                                    <i class="fas fa-sign-in-alt"></i> Entrada
+                                </button>
+                                <button class="btn-salida" onclick="registrarSalida('2')">
+                                    <i class="fas fa-sign-out-alt"></i> Salida
+                                </button>
+                            </div>
+                            <p class="estado-hora" id="estado-2">Última entrada: 08:45</p>
+                        </div>
+
+                        <!-- Alumno 3 -->
+                        <div class="alumno-card">
+                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
+                            <h3 class="alumno-nombre">Pedro Rodríguez</h3>
+                            <div class="alumno-buttons">
+                                <button class="btn-entrada" onclick="registrarEntrada('3')">
+                                    <i class="fas fa-sign-in-alt"></i> Entrada
+                                </button>
+                                <button class="btn-salida" onclick="registrarSalida('3')">
+                                    <i class="fas fa-sign-out-alt"></i> Salida
+                                </button>
+                            </div>
+                            <p class="estado-hora" id="estado-3">Última entrada: 08:15</p>
+                        </div>
+
+                        <!-- Alumno 4 -->
+                        <div class="alumno-card">
+                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
+                            <h3 class="alumno-nombre">Ana Silva</h3>
+                            <div class="alumno-buttons">
+                                <button class="btn-entrada" onclick="registrarEntrada('4')">
+                                    <i class="fas fa-sign-in-alt"></i> Entrada
+                                </button>
+                                <button class="btn-salida" onclick="registrarSalida('4')">
+                                    <i class="fas fa-sign-out-alt"></i> Salida
+                                </button>
+                            </div>
+                            <p class="estado-hora" id="estado-4">Última entrada: 08:20</p>
+                        </div>
+
+                        <!-- Alumno 5 -->
+                        <div class="alumno-card">
+                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
+                            <h3 class="alumno-nombre">Carlos Muñoz</h3>
+                            <div class="alumno-buttons">
+                                <button class="btn-entrada" onclick="registrarEntrada('5')">
+                                    <i class="fas fa-sign-in-alt"></i> Entrada
+                                </button>
+                                <button class="btn-salida" onclick="registrarSalida('5')">
+                                    <i class="fas fa-sign-out-alt"></i> Salida
+                                </button>
+                            </div>
+                            <p class="estado-hora" id="estado-5">Última entrada: 08:40</p>
+                        </div>
+
+                        <!-- Alumno 6 -->
+                        <div class="alumno-card">
+                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
+                            <h3 class="alumno-nombre">Laura Torres</h3>
+                            <div class="alumno-buttons">
+                                <button class="btn-entrada" onclick="registrarEntrada('6')">
+                                    <i class="fas fa-sign-in-alt"></i> Entrada
+                                </button>
+                                <button class="btn-salida" onclick="registrarSalida('6')">
+                                    <i class="fas fa-sign-out-alt"></i> Salida
+                                </button>
+                            </div>
+                            <p class="estado-hora" id="estado-6">Última entrada: 08:25</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar Entrada</h3>
+            <p>¿Está seguro que desea registrar la entrada de <span id="alumnoNombreConfirmar"></span>?</p>
+            <div class="modal-buttons">
+                <button class="modal-button modal-confirm" onclick="confirmarEntrada()">Confirmar</button>
+                <button class="modal-button modal-cancel" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de apoderado -->
+    <div id="apoderadoModal" class="modal">
+        <div class="modal-content">
+            <h3>Seleccionar Apoderado</h3>
+            <div class="buscar-rut">
+                <input type="text" id="rutAlumnoBuscar" placeholder="Ingrese RUT del alumno">
+            </div>
+            <div class="apoderados-grid">
+                <!-- Apoderado 1 -->
+                <div class="apoderado-card" onclick="seleccionarApoderado(this, '1')">
+                    <img src="https://via.placeholder.com/80" alt="Apoderado" class="apoderado-foto">
+                    <h4 class="apoderado-nombre">Juan Pérez</h4>
+                    <p class="apoderado-relacion">Padre</p>
+                </div>
+
+                <!-- Apoderado 2 -->
+                <div class="apoderado-card" onclick="seleccionarApoderado(this, '2')">
+                    <img src="https://via.placeholder.com/80" alt="Apoderado" class="apoderado-foto">
+                    <h4 class="apoderado-nombre">María González</h4>
+                    <p class="apoderado-relacion">Madre</p>
+                </div>
+
+                <!-- Apoderado 3 -->
+                <div class="apoderado-card" onclick="seleccionarApoderado(this, '3')">
+                    <img src="https://via.placeholder.com/80" alt="Apoderado" class="apoderado-foto">
+                    <h4 class="apoderado-nombre">Carlos Silva</h4>
+                    <p class="apoderado-relacion">Tío</p>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button modal-confirm" onclick="confirmarSalida()">Confirmar Salida</button>
+                <button class="modal-button modal-cancel" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="registro.js"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@ app.use(express.static("public"));
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "DanielDennisse_123",
+    password: "",//DanielDennisse_123
     database: "jardin_db"
 });
 
@@ -85,8 +85,6 @@ app.post('/api/docentes', (req, res) => {
     //    return res.status(400).send({ message: "Los campos rutDocente, passwordDocente, nombreDocente, apellidoDocente, fonoDocente y cursoDocente son obligatorios" });
     //}
 
-    
-    console.log("Datos recibidos para docente:", docente);
 
     const query = "INSERT INTO docente (rut_docente, password, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     connection.query(query, [

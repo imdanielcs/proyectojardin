@@ -54,6 +54,37 @@ app.post("/login", (req, res) => {
     });
 });
 
+
+app.post("/login-docente", (req, res) => {
+    const { rut_docente, password } = req.body;
+
+   
+    const query = "SELECT * FROM docente WHERE rut_docente = ?";
+    connection.query(query, [rut_docente], (err, results) => {
+        if (err) {
+            console.error("Error al consultar la base de datos:", err);
+            return res.status(500).json({ message: "Error en el servidor" });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
+        }
+
+        const user = results[0];
+
+        
+        if (password !== user.password) {
+            return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
+        }
+
+        // Generar un token JWT
+        const token = jwt.sign({ username: user.rut_docente }, SECRET_KEY, { expiresIn: "1h" });
+        res.json({ token });
+    });
+});
+
+
+
 // Middleware para proteger rutas
 function authenticateToken(req, res, next) {
     const token = req.headers["authorization"]?.split(" ")[1];
@@ -160,5 +191,18 @@ app.post('/api/alumnos', (req, res) => {
             }
             res.status(201).send({ message: 'Alumno registrado exitosamente' });
         });
+    });
+});
+
+
+
+app.get('/api/alumnos', (req, res) => {
+    const query = 'SELECT rut_alumno, nombre, apellido FROM alumno';
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('Error al obtener los alumnos:', err);
+            return res.status(500).json({ error: 'Error al obtener los alumnos' });
+        }
+        res.json(results);
     });
 });

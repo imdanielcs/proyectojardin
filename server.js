@@ -13,7 +13,7 @@ app.use(express.static("public"));
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "DanielDennisse_123",//DanielDennisse_123
+    password: "DanielDennisse_123",
     database: "jardin_db"
 });
 
@@ -197,12 +197,54 @@ app.post('/api/alumnos', (req, res) => {
 
 
 app.get('/api/alumnos', (req, res) => {
-    const query = 'SELECT rut_alumno, nombre, apellido FROM alumno';
+    const query = 'SELECT rut_alumno, nombre, apellido, curso_id_curso FROM alumno';
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Error al obtener los alumnos:', err);
             return res.status(500).json({ error: 'Error al obtener los alumnos' });
         }
         res.json(results);
+    });
+});
+
+app.post('/api/ingreso', (req, res) => {
+    const { rut_alumno, id_curso, estado, hora } = req.body;
+
+    if (!rut_alumno || !id_curso || !estado || !hora) {
+        return res.status(400).send({ message: "Todos los campos son obligatorios" });
+    }
+
+    const query = `
+        INSERT INTO ingreso (rut_alumno, id_curso, estado, hora)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    connection.query(query, [rut_alumno, id_curso, estado, hora], (err, results) => {
+        if (err) {
+            console.error("Error al insertar en la tabla ingreso:", err);
+            return res.status(500).send({ message: "Error al registrar la asistencia" });
+        }
+        res.status(201).send({ message: "Asistencia registrada correctamente" });
+    });
+});
+
+app.post('/api/salida', (req, res) => {
+    const { rut_alumno, id_curso, estado, hora } = req.body;
+
+    if (!rut_alumno || !id_curso || !estado || !hora) {
+        return res.status(400).send({ message: "Todos los campos son obligatorios" });
+    }
+
+    const query = `
+        INSERT INTO salida (rut_alumno, id_curso, estado, hora)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    connection.query(query, [rut_alumno, id_curso, estado, hora], (err, results) => {
+        if (err) {
+            console.error("Error al insertar en la tabla salida:", err);
+            return res.status(500).send({ message: "Error al registrar la salida" });
+        }
+        res.status(201).send({ message: "Salida registrada correctamente" });
     });
 });

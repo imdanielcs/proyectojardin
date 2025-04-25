@@ -98,6 +98,22 @@ function authenticateToken(req, res, next) {
     });
 }
 
+//Ruta para obtener el total de docentes en el jardin
+app.get('/api/docentes/count', (req, res) => {
+    const query = 'SELECT COUNT(*) AS total FROM docente';
+    
+    connection.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ error: 'Error en la base de datos' });
+      }
+  
+      const totalDocentes = results[0].total;
+      res.json({ totalDocentes });
+    });
+  });
+
+
 
 // Ruta protegida de ejemplo
 app.get("/registro", authenticateToken, (req, res) => {
@@ -114,23 +130,24 @@ app.post('/api/docentes', (req, res) => {
 
     // Validación de campos requeridos
     if (!docente.rutDocente || !docente.nombreDocente || !docente.apellidoDocente || 
-        !docente.fono1 || !docente.email1) {
+        !docente.fonoDocente || !docente.emailDocente || !docente.cursoDocente) {
         return res.status(400).send({
-            message: "Los campos RUT, nombre, apellido, teléfono y email son obligatorios"
+            message: "Los campos RUT, nombre, apellido, teléfono, curso y email son obligatorios"
         });
     }
 
-    const query = "INSERT INTO docente (rut_docente, nombre, apellido, fono1, fono2, email1, email2, direccion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    console.log("Ingresa los datos del docente a la query");
+    const query = "INSERT INTO docente (rut_docente, password, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     connection.query(query, [
         docente.rutDocente,
+        docente.password,
         docente.nombreDocente,
         docente.apellidoDocente,
-        docente.fono1,
-        docente.fono2 || null,
-        docente.email1,
-        docente.email2 || null,
-        docente.direccion || null
+        docente.fonoDocente,
+        docente.emailDocente,
+        docente.direccionDocente || null,
+        docente.cursoDocente
     ], (err, results) => {
         if (err) {
             console.error("Error al insertar en la tabla docente:", err);
@@ -204,5 +221,92 @@ app.get('/api/alumnos', (req, res) => {
             return res.status(500).json({ error: 'Error al obtener los alumnos' });
         }
         res.json(results);
+    });
+});
+
+app.get('/api/docentes',(req, res) => {
+    const query = 'SELECT rut_docente, nombre, apellido, fono, email, curso_id_curso FROM docente';
+    connection.query(query, (err, results) => {
+
+        if (err) {
+            console.error('Error al obtener los docentes:', err);
+            return res.status(500).json({ error: 'Error al obtener los docentes' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: "No se encontraron docentes registrados" });
+        }
+
+        return res.status(200).json(results);
+    });
+
+});
+
+app.put('/api/docentes/:rut', (req, res) => {
+    const rutDocente = req.params.rut;
+    const docente = req.body;
+    console.log("Datos recibidos para actualizar al docente:", docente);
+
+    // Validación de campos requeridos
+    if (!docente.nombreDocente || !docente.apellidoDocente || 
+        !docente.fonoDocente || !docente.emailDocente || !docente.cursoDocente) {
+        return res.status(400).send({
+            message: "Los campos nombre, apellido, teléfono, curso y email son obligatorios"
+        });
+    }
+
+    console.log("Actualizando datos del docente con RUT:", rutDocente);
+    const query = `
+        UPDATE docente 
+        SET 
+            nombre = ?, 
+            apellido = ?, 
+            fono = ?, 
+            email = ?, 
+            direccion = ?, 
+            curso_id_curso = ? 
+        WHERE rut_docente = ?`;
+
+    connection.query(query, [
+        docente.nombreDocente,
+        docente.apellidoDocente,
+        docente.fonoDocente,
+        docente.emailDocente,
+        docente.direccionDocente || null,
+        docente.cursoDocente,
+        rutDocente
+    ], (err, results) => {
+        if (err) {
+            console.error("Error al actualizar el docente:", err);
+            return res.status(500).send({ message: "Error al actualizar el docente" });
+        }
+        
+        if (results.affectedRows === 0) {
+            return res.status(404).send({ message: "Docente no encontrado" });
+        }
+
+        console.log("Docente actualizado exitosamente:", results);
+        res.status(200).send({ message: 'Docente actualizado exitosamente' });
+    });
+});
+
+app.delete('/api/docentes/:rut', (req, res) => {
+    const rutDocente = req.params.rut;
+    console.log("Eliminando docente con RUT:", rutDocente);
+
+    const query = "DELETE FROM docente WHERE rut_docente = ?";
+
+    connection.query(query, [rutDocente], (err, results) => {
+        if (err) {
+            console.error("Error al eliminar el docente:", err);
+            return res.status(500).send({ message: "Error al eliminar el docente" });
+        }
+        
+        if (results.affectedRows === 0) {
+            return res.status(404).send({ message: "Docente no encontrado" });
+        }
+
+        console.log("Docente eliminado exitosamente:", results);
+        res.status(200).send({ message: 'Docente eliminado exitosamente' });
     });
 });

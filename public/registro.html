@@ -26,7 +26,7 @@
         <!-- Contenido principal -->
         <div class="main-content">
             <!-- Pantalla de bienvenida -->
-            <div id="welcome-screen" class="welcome-screen">
+            <div id="welcome-screen" class="welcome-screen" style="width: 100%; border-spacing: 0 15px;">
                 <h1>Bienvenido al Jardín Infantil Huellita</h1>
                 <div class="stats-container">
                     <div class="stat-box">
@@ -56,8 +56,8 @@
                             <span class="error-message" id="error-rutDocente"></span>
                         </div>
                         <div class="form-row">
-                            <label for="passwordDocente">Password:</label>
-                            <input type="password" id="password" name="passwordDocente" required>
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required>
                             <span class="error-message" id="error-password"></span>
                         </div>
                         <div class="form-row">
@@ -86,7 +86,7 @@
                             <span class="error-message" id="error-direccionDocente"></span>
                         </div>
                         <div class="form-row">
-                            <label for="curso">Curso:</label>
+                            <label for="cursoDocente">Curso:</label>
                             <input type="text" id="cursoDocente" name="cursoDocente" required>
                             <span class="error-message" id="error-cursoDocente"></span>
                         </div>
@@ -172,34 +172,57 @@
                 <div id="docentes-form" class="form-section">
          
                     <h2 >Lista de Docentes</h2>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                        <tr style="background-color: #ecf0f1;">
-                            <th style="padding: 12px; text-align: left;">Nombre</th>
-                            <th style="padding: 12px; text-align: left;">RUT</th>
-                            <th style="padding: 12px; text-align: left;">Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr >
-                            <td style="padding: 12px;">María López</td>
-                            <td style="padding: 12px;">12.345.678-9</td>
-                            <td style="padding: 12px;">
-                            <button class="btn-entrada" onclick="actualizarDocente('María López')">Actualizar</button>
-                            <button class="btn-salida" onclick="confirmarEliminacion('María López')">Eliminar</button>
-                            </td>
-                        </tr>
-                        <tr >
-                            <td style="padding: 12px;">Carlos Pérez</td>
-                            <td style="padding: 12px;">11.223.344-5</td>
-                            <td style="padding: 12px;">
-                            <button class="btn-entrada" onclick="actualizarDocente('Carlos Pérez')">Actualizar</button>
-                            <button class="btn-salida" onclick="confirmarEliminacion('Carlos Pérez')">Eliminar</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                  
+                        <table style="width: 100%; border-spacing: 0 15px;">
+                            <thead>
+                                <tr style="background-color: #ecf0f1;">
+                                <th style="padding: 12px; text-align: left;">RUT</th>
+                                <th style="padding: 12px; text-align: left;">Nombre</th>
+                                <th style="padding: 12px; text-align: left;">Apellido</th>
+                                <th style="padding: 12px; text-align: left;">Fono</th>
+                                <th style="padding: 12px; text-align: left;">Email</th>
+                                <th style="padding: 12px; text-align: left;">Curso</th>
+                                <th style="padding: 12px; text-align: left;">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tabla-docentes"  style="width: 100%;">
+                                <td style="padding: 12px;">
+                                </td>
+                            </tbody>
+                        </table>
+                </div>
+                <!-- Modal para Actualizar Docente -->
+                <div id="modal-actualizar" class="modal" >
+                    <div class="form-container">
+                        <h2>Actualizar Docente</h2>
+                        <div class="form-row">
+                        <label for="nombreDocente" >Nombre:</label>
+                        <input type="text" id="nombreDocente">
+                        </div>
+                        <div class="form-row">
+                        <label for="apellidoDocente">Apellido:</label>
+                        <input type="text" id="apellidoDocente">
+                        </div>
+                        <div class="form-row">
+                        <label for="fonoDocente">Teléfono:</label>
+                        <input type="text" id="fonoDocente">
+                        </div>
+                        <div class="form-row">
+                        <label for="emailDocente">Email:</label>
+                        <input type="email" id="emailDocente">
+                        </div>
+                        <div class="form-row">
+                        <label for="cursoDocente">Curso:</label>
+                        <input type="text" id="cursoDocente">
+                        </div>
+                        <div class="form-row">
+                        <label for="direccionDocente">Dirección (opcional):</label>
+                        <input type="text" id="direccionDocente">
+                        </div>
+                        <div class="form-row">
+                        <button id="btn-confirmar">Confirmar</button>
+                        <button id="btn-cancelar">Cancelar</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Formulario de Comunicación con Apoderado -->

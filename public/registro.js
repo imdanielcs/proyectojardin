@@ -31,7 +31,7 @@ function showForm(formType) {
 // Función para cerrar sesión
 function cerrarSesion() {
     localStorage.removeItem('authToken');
-    window.location.href = '/login.html';
+    window.location.href = '/index.html';
 }
 
 // Función principal para manejar el registro de docentes
@@ -52,7 +52,7 @@ function inicializarRegistroDocente() {
         
         const formData = {
             rutDocente: document.getElementById("rutDocente").value,
-            passwordDocente: document.getElementById("password").value,
+            password: document.getElementById("password").value,
             nombreDocente: document.getElementById("nombreDocente").value,
             apellidoDocente: document.getElementById("apellidoDocente").value,
             fonoDocente: document.getElementById("fonoDocente").value,
@@ -60,7 +60,8 @@ function inicializarRegistroDocente() {
             direccionDocente: document.getElementById("direccionDocente").value,
             cursoDocente: document.getElementById("cursoDocente").value
         };
-
+        console.log(formData);
+        
         
 
         try {
@@ -177,6 +178,21 @@ function inicializarRegistroAlumno() {
     });
 }
 
+function BustarcantidadDocente(){
+    fetch('/api/docentes/count')
+        .then(response => response.json())
+        .then(data => {
+          // Mostrar el número de docentes en el HTML
+          document.getElementById('total-docentes').textContent = data.totalDocentes;
+        })
+        .catch(error => {
+          console.error('Error al obtener el número de docentes:', error);
+          document.getElementById('total-docentes').textContent = 'Error al cargar';
+        });
+
+
+}
+
 // Inicialización cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM cargado");
@@ -186,3 +202,158 @@ document.addEventListener("DOMContentLoaded", function() {
     // Mostrar la pantalla de bienvenida por defecto
     showWelcomeScreen();
 });
+
+//evento que se dispara cuando el HTML ha sido completamente cargado
+//ideal cuando se necesita interactuar con el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    cargarDocentes();
+});
+
+let rutDocenteActualizar = null; //variable para almacenar el rut del docente
+
+function cargarDocentes() {
+    fetch('/api/docentes')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener los docentes');
+            }
+            return response.json();
+        })
+        .then(docentes => {
+            const tabla = document.getElementById('tabla-docentes');//hace refenencia a la tabla en el html
+            tabla.innerHTML = ''; // limpia la tabla antes de agregar nuevos datos
+
+            docentes.forEach(docente => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${docente.rut_docente}</td>
+                    <td>${docente.nombre}</td>
+                    <td>${docente.apellido}</td>
+                    <td>${docente.fono}</td>
+                    <td>${docente.email}</td>
+                    <td>${docente.curso}</td>
+                `;
+                // Crear celda para los botones de acción
+                const tdAcciones = document.createElement('td');
+                
+                // Crear botón de Actualizar
+                const btnActualizar = document.createElement('button');
+                btnActualizar.textContent = 'Actualizar';
+                btnActualizar.classList.add('btn-entrada');
+                console.log("entra rut docente"+ docente.rutDocente);
+                btnActualizar.onclick = () => {
+                    rutDocenteActualizar = docente.rut_docente; // Guardar el RUT del docente a actualizar
+                    mostrarModal(docente); 
+                };
+                // Crear botón de Eliminar
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.classList.add('btn-salida');
+                btnEliminar.onclick = () => eliminarDocente(docente.rut_docente); // Llama a la función con el RUT del docente
+
+                // Agregar los botones a la celda de acciones
+                tdAcciones.appendChild(btnActualizar);
+                tdAcciones.appendChild(btnEliminar);
+
+                // Agregar la celda de botones a la fila
+                fila.appendChild(tdAcciones);
+
+                // Agregar la fila a la tabla
+                tabla.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function mostrarModal(docente) {
+    // Rellenar los campos del modal con los datos del docente
+    document.getElementById('nombreDocente').value = docente.nombre;
+    document.getElementById('apellidoDocente').value = docente.apellido;
+    document.getElementById('fonoDocente').value = docente.fono;
+    document.getElementById('emailDocente').value = docente.email;
+    document.getElementById('cursoDocente').value = docente.curso;
+    document.getElementById('direccionDocente').value = docente.direccion || '';
+
+    // Mostrar el modal
+    document.getElementById('modal-actualizar').style.display = 'block';
+}
+
+// Función para actualizar el docente
+function actualizarDocente() {
+    if (rutDocenteActualizar === null) {
+        alert("No se ha seleccionado un docente para actualizar.");
+        return;
+    }
+
+    const docenteActualizado = {
+        nombreDocente: document.getElementById('nombreDocente').value,
+        apellidoDocente: document.getElementById('apellidoDocente').value,
+        fonoDocente: document.getElementById('fonoDocente').value,
+        emailDocente: document.getElementById('emailDocente').value,
+        cursoDocente: document.getElementById('cursoDocente').value,
+        direccionDocente: document.getElementById('direccionDocente').value || null
+    };
+
+    // Validación de campos
+    if (!docenteActualizado.nombreDocente || !docenteActualizado.apellidoDocente || 
+        !docenteActualizado.fonoDocente || !docenteActualizado.emailDocente || 
+        !docenteActualizado.cursoDocente) {
+        alert("Por favor, completa todos los campos obligatorios.");
+        return;
+    }
+
+    // Solicitud PUT para actualizar docente
+    fetch(`/api/docentes/${rutDocenteActualizar}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(docenteActualizado)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Docente actualizado exitosamente.");
+        console.log(data);
+        // Cerrar el modal
+        document.getElementById('modal-actualizar').style.display = 'none';
+        cargarDocentes(); // Recargar los docentes en la tabla
+    })
+    .catch(error => {
+        console.error("Error al actualizar docente:", error);
+        alert("Hubo un problema al actualizar el docente.");
+    });
+}
+
+// Función para cerrar el modal
+function cancelarActualizacion() {
+    document.getElementById('modal-actualizar').style.display = 'none';
+}
+
+// Asignar la función de confirmar y cancelar en los botones del modal
+document.getElementById('btn-confirmar').onclick = actualizarDocente;
+document.getElementById('btn-cancelar').onclick = cancelarActualizacion;
+
+// Función para eliminar un docente
+function eliminarDocente(rut) {
+    if (confirm(`¿Estás seguro de que quieres eliminar al docente con RUT ${rut}?`)) {
+        // Realizamos la solicitud DELETE para eliminar al docente
+        fetch(`/api/docentes/${rut}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("Docente eliminado exitosamente.");
+            console.log(data);
+            // Aquí podrías recargar la lista de docentes o actualizar la tabla
+        })
+        .catch(error => {
+            console.error("Error al eliminar docente:", error);
+            alert("Hubo un problema al eliminar el docente.");
+        });
+    }
+}
+
+
+

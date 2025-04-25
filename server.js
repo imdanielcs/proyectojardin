@@ -13,7 +13,7 @@ app.use(express.static("public"));
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "DanielDennisse_123",
+    password: "DanielDennisse_123",//DanielDennisse_123
     database: "jardin_db"
 });
 
@@ -110,8 +110,24 @@ app.get('/api/docentes/count', (req, res) => {
   
       const totalDocentes = results[0].total;
       res.json({ totalDocentes });
+      console.log("cantidad de profesores:" + totalDocentes);
     });
   });
+
+//Ruta para obtener el total de alumnos en el jardin
+app.get('/api/alumnos/count', (req, res) => {
+    const query = 'SELECT COUNT(*) AS total FROM alumno';
+    connection.query(query, (err, results) => {
+    if (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ error: 'Error en la base de datos' });
+    }
+
+    const totalAlumnos = results[0].total;
+    res.json({ totalAlumnos });
+    console.log("cantidad de alumnos:" + totalAlumnos);
+    });
+});
 
 
 

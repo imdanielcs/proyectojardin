@@ -178,17 +178,32 @@ function inicializarRegistroAlumno() {
     });
 }
 
-function BustarcantidadDocente(){
-    fetch('/api/docentes/count')
+function BustarcantidadInformacionJardin(){
+    console.log("Función BustarcantidadDocente ejecutada");
+    fetch('http://localhost:3000/api/docentes/count')
         .then(response => response.json())
         .then(data => {
           // Mostrar el número de docentes en el HTML
           document.getElementById('total-docentes').textContent = data.totalDocentes;
+          console.info(data.totalDocentes);
         })
         .catch(error => {
           console.error('Error al obtener el número de docentes:', error);
           document.getElementById('total-docentes').textContent = 'Error al cargar';
         });
+
+    fetch('http://localhost:3000/api/alumnos/count')
+        .then(response => response.json())
+        .then(data => {
+            // Mostrar el número de docentes en el HTML
+            document.getElementById('total-alumnos').textContent = data.totalAlumnos;
+            console.info(data.totalAlumnos);
+        })
+        .catch(error => {
+            console.error('Error al obtener el número de Alumnos:', error);
+            document.getElementById('total-alumnos').textContent = 'Error al cargar';
+        });
+
 
 
 }
@@ -207,6 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //ideal cuando se necesita interactuar con el DOM
 document.addEventListener('DOMContentLoaded', () => {
     cargarDocentes();
+    BustarcantidadInformacionJardin();
 });
 
 let rutDocenteActualizar = null; //variable para almacenar el rut del docente

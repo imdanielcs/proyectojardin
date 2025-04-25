@@ -13,3 +13,30 @@ ADD COLUMN fono2 varchar(20) DEFAULT NULL,
 ADD COLUMN email1 varchar(20) DEFAULT NULL,
 ADD COLUMN email2 varchar(20) DEFAULT NULL,
 ADD COLUMN direccion varchar(20) DEFAULT NULL; 
+
+Agregar tablas ingrteso y salida
+-- Crear tabla de ingreso
+CREATE TABLE IF NOT EXISTS `ingreso` (
+  `id_ingreso` INT AUTO_INCREMENT PRIMARY KEY,
+  `rut_alumno` VARCHAR(12) NOT NULL,
+  `id_curso` INT NOT NULL,
+  `estado` ENUM('Asistió', 'No Asistió') NOT NULL,
+  `hora` DATETIME NOT NULL,
+  FOREIGN KEY (`id_curso`) REFERENCES `curso`(`id_curso`)
+);
+
+-- Crear tabla de salida
+CREATE TABLE IF NOT EXISTS `salida` (
+  `id_salida` INT AUTO_INCREMENT PRIMARY KEY,
+  `rut_alumno` VARCHAR(12) NOT NULL,
+  `id_curso` INT NOT NULL,
+  `estado` ENUM('Salida', 'No Salió') NOT NULL,
+  `hora` DATETIME NOT NULL,
+  FOREIGN KEY (`id_curso`) REFERENCES `curso`(`id_curso`)
+);
+
+-- Asegúrate de que la tabla 'curso' exista o crearla si es necesario
+CREATE TABLE IF NOT EXISTS `curso` (
+  `id_curso` INT AUTO_INCREMENT PRIMARY KEY,
+  `nombre_curso` VARCHAR(255) NOT NULL
+);

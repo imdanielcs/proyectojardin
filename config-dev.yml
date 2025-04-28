@@ -1,0 +1,8 @@
+
+mailjet:
+  apiKey: '51c0e31cd1de47bce5706c7b12c76db0'
+  apiSecret: '633c4626d0c78077a01c54f810533d57'
+
+emailSender:
+  email: 'de.reveco@duocuc.cl'
+  name: 'Jardín Huellita'

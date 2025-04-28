@@ -13,7 +13,7 @@ app.use(express.static("public"));
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "DanielDennisse_123",//DanielDennisse_123
+    password: "",//DanielDennisse_123
     database: "jardin_db"
 });
 
@@ -240,6 +240,31 @@ app.get('/api/alumnos', (req, res) => {
     });
 });
 
+//traer al alumno y su informacion por rut:
+app.get('/api/alumnos/:rut',(req, res)=> {
+    const { rut } = req.params; //tomando el rut de la url
+    const query = 'SELECT rut_alumno, nombre, apellido, curso_id_curso, nombre_apoderado_uno, nombre_apoderado_dos, fono1, fono2, email1 ,email2, direccion FROM alumno WHERE rut_alumno = ?';
+
+    connection.query(query, [rut], (err, results)=>{
+        if(err){
+            console.error('Error al obtener el alumno: ', err);
+            return res.status(500).json({error:'Error al obtener información del alumno'});
+        }
+        //cuando no encuentre al alumno
+        if(results.length === 0){
+            return res.status(404).json({error: 'Alumno no encontrado'});
+        }
+        //si todo sale bien, devuelve al alumno encontrado
+        res.json(results[0]);
+        // Esto imprime los detalles del alumno encontrado (información en consola)
+        console.log("Alumno y su información: ", results[0]);
+    
+    });
+});
+
+
+
+
 app.get('/api/docentes',(req, res) => {
     const query = 'SELECT rut_docente, nombre, apellido, fono, email, curso_id_curso FROM docente';
     connection.query(query, (err, results) => {
@@ -368,3 +393,40 @@ app.post('/api/salida', (req, res) => {
         res.status(201).send({ message: "Salida registrada correctamente" });
     });
 });
+
+
+// Endpoint de prueba para Mailjet
+app.get('/api/test-mailjet', (req, res) => {
+    const request = mailjet
+      .post("send", { 'version': 'v3.1' })
+      .request({
+        "Messages": [
+          {
+            "From": {
+              "Email": config.emailSender.email,
+              "Name": config.emailSender.name
+            },
+            "To": [
+              {
+                "Email": "MAILDEPRUEBA",
+                "Name": "Cliente"
+              }
+            ],
+            "Subject": "Prueba de Envío de Correo",
+            "TextPart": "Este es un correo de prueba desde Mailjet.",
+            "HTMLPart": "<h3>¡Prueba Exitosa!</h3><p>Este es un correo de prueba desde Mailjet.</p>"
+          }
+        ]
+      });
+  
+    request
+      .then((result) => {
+        console.log('Correo enviado:', result.body);
+        res.json({ message: 'Correo enviado correctamente' });
+      })
+      .catch((err) => {
+        console.error('Error al enviar el correo:', err.statusCode);
+        res.status(500).json({ error: 'Error al enviar el correo' });
+      });
+  });
+  

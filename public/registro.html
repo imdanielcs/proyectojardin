@@ -226,136 +226,22 @@
                 </div>
 
                 <!-- Formulario de Comunicación con Apoderado -->
-                <div id="comunicar-apoderado-form" class="form-section">
-                    <h2>Comunicación con Apoderado</h2>
-                    <form id="formComunicarApoderado">
-                        <div class="form-row">
-                            <label for="alumnoComunicacion">Seleccionar Alumno:</label>
-                            <select id="alumnoComunicacion" name="alumnoComunicacion" required>
-                                <option value="">Seleccione un alumno</option>
-                                <!-- Aquí se cargarán los alumnos dinámicamente -->
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label>Datos del Apoderado:</label>
-                            <div class="apoderado-info">
-                                <p><strong>Nombre:</strong> <span id="nombreApoderado">-</span></p>
-                                <p><strong>Teléfono:</strong> <span id="telefonoApoderado">-</span></p>
-                                <p><strong>Email:</strong> <span id="emailApoderado">-</span></p>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <label for="tipoComunicacion">Tipo de Comunicación:</label>
-                            <select id="tipoComunicacion" name="tipoComunicacion" required>
-                                <option value="informacion">Información General</option>
-                                <option value="emergencia">Emergencia</option>
-                                <option value="reunion">Solicitud de Reunión</option>
-                                <option value="otro">Otro</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label for="mensajeComunicacion">Mensaje:</label>
-                            <textarea id="mensajeComunicacion" name="mensajeComunicacion" rows="4" required></textarea>
-                        </div>
-                        <button type="submit" class="login-button">Enviar Comunicación</button>
-                    </form>
-                </div>
+            <div id="comunicar-apoderado-form" class="form-section">
+                <h1>Comunicación con Apoderado</h1>
+                <form id="formComunicarApoderado">
+                    <h2>Buscar Alumno por RUT</h2>
+                    <input type="text" id="rutInput" placeholder="Ingrese el RUT" />
+                    <button type="button" onclick="buscarPorRutAlumno(rutInput)">Buscar</button>
 
-                <!-- Formulario de Entrada y Salida de Alumnos -->
-                <div id="entrada-salida-form" class="form-section">
-                    <h2>Registro de Entrada y Salida de Alumnos</h2>
-                    <div class="alumnos-grid">
-                        <!-- Alumno 1 -->
-                        <div class="alumno-card">
-                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
-                            <h3 class="alumno-nombre">Juan Pérez</h3>
-                            <div class="alumno-buttons">
-                                <button class="btn-entrada" onclick="registrarEntrada('1')">
-                                    <i class="fas fa-sign-in-alt"></i> Entrada
-                                </button>
-                                <button class="btn-salida" onclick="registrarSalida('1')">
-                                    <i class="fas fa-sign-out-alt"></i> Salida
-                                </button>
-                            </div>
-                            <p class="estado-hora" id="estado-1">Última entrada: 08:30</p>
-                        </div>
-
-                        <!-- Alumno 2 -->
-                        <div class="alumno-card">
-                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
-                            <h3 class="alumno-nombre">María González</h3>
-                            <div class="alumno-buttons">
-                                <button class="btn-entrada" onclick="registrarEntrada('2')">
-                                    <i class="fas fa-sign-in-alt"></i> Entrada
-                                </button>
-                                <button class="btn-salida" onclick="registrarSalida('2')">
-                                    <i class="fas fa-sign-out-alt"></i> Salida
-                                </button>
-                            </div>
-                            <p class="estado-hora" id="estado-2">Última entrada: 08:45</p>
-                        </div>
-
-                        <!-- Alumno 3 -->
-                        <div class="alumno-card">
-                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
-                            <h3 class="alumno-nombre">Pedro Rodríguez</h3>
-                            <div class="alumno-buttons">
-                                <button class="btn-entrada" onclick="registrarEntrada('3')">
-                                    <i class="fas fa-sign-in-alt"></i> Entrada
-                                </button>
-                                <button class="btn-salida" onclick="registrarSalida('3')">
-                                    <i class="fas fa-sign-out-alt"></i> Salida
-                                </button>
-                            </div>
-                            <p class="estado-hora" id="estado-3">Última entrada: 08:15</p>
-                        </div>
-
-                        <!-- Alumno 4 -->
-                        <div class="alumno-card">
-                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
-                            <h3 class="alumno-nombre">Ana Silva</h3>
-                            <div class="alumno-buttons">
-                                <button class="btn-entrada" onclick="registrarEntrada('4')">
-                                    <i class="fas fa-sign-in-alt"></i> Entrada
-                                </button>
-                                <button class="btn-salida" onclick="registrarSalida('4')">
-                                    <i class="fas fa-sign-out-alt"></i> Salida
-                                </button>
-                            </div>
-                            <p class="estado-hora" id="estado-4">Última entrada: 08:20</p>
-                        </div>
-
-                        <!-- Alumno 5 -->
-                        <div class="alumno-card">
-                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
-                            <h3 class="alumno-nombre">Carlos Muñoz</h3>
-                            <div class="alumno-buttons">
-                                <button class="btn-entrada" onclick="registrarEntrada('5')">
-                                    <i class="fas fa-sign-in-alt"></i> Entrada
-                                </button>
-                                <button class="btn-salida" onclick="registrarSalida('5')">
-                                    <i class="fas fa-sign-out-alt"></i> Salida
-                                </button>
-                            </div>
-                            <p class="estado-hora" id="estado-5">Última entrada: 08:40</p>
-                        </div>
-
-                        <!-- Alumno 6 -->
-                        <div class="alumno-card">
-                            <img src="https://via.placeholder.com/120" alt="Alumno" class="alumno-foto">
-                            <h3 class="alumno-nombre">Laura Torres</h3>
-                            <div class="alumno-buttons">
-                                <button class="btn-entrada" onclick="registrarEntrada('6')">
-                                    <i class="fas fa-sign-in-alt"></i> Entrada
-                                </button>
-                                <button class="btn-salida" onclick="registrarSalida('6')">
-                                    <i class="fas fa-sign-out-alt"></i> Salida
-                                </button>
-                            </div>
-                            <p class="estado-hora" id="estado-6">Última entrada: 08:25</p>
-                        </div>
+                    <div id="alumnoInfo" style="margin: 30px;">
+                        <!-- Datos del alumno -->
+                        <p style="padding: 12px;width: 100%;"><p>
                     </div>
-                </div>
+
+                    <button type="submit" class="login-button">Enviar Comunicación</button>
+                </form>
+            </div>
+                
             </div>
         </div>
     </div>
@@ -372,41 +258,7 @@
         </div>
     </div>
 
-    <!-- Modal de selección de apoderado -->
-    <div id="apoderadoModal" class="modal">
-        <div class="modal-content">
-            <h3>Seleccionar Apoderado</h3>
-            <div class="buscar-rut">
-                <input type="text" id="rutAlumnoBuscar" placeholder="Ingrese RUT del alumno">
-            </div>
-            <div class="apoderados-grid">
-                <!-- Apoderado 1 -->
-                <div class="apoderado-card" onclick="seleccionarApoderado(this, '1')">
-                    <img src="https://via.placeholder.com/80" alt="Apoderado" class="apoderado-foto">
-                    <h4 class="apoderado-nombre">Juan Pérez</h4>
-                    <p class="apoderado-relacion">Padre</p>
-                </div>
-
-                <!-- Apoderado 2 -->
-                <div class="apoderado-card" onclick="seleccionarApoderado(this, '2')">
-                    <img src="https://via.placeholder.com/80" alt="Apoderado" class="apoderado-foto">
-                    <h4 class="apoderado-nombre">María González</h4>
-                    <p class="apoderado-relacion">Madre</p>
-                </div>
-
-                <!-- Apoderado 3 -->
-                <div class="apoderado-card" onclick="seleccionarApoderado(this, '3')">
-                    <img src="https://via.placeholder.com/80" alt="Apoderado" class="apoderado-foto">
-                    <h4 class="apoderado-nombre">Carlos Silva</h4>
-                    <p class="apoderado-relacion">Tío</p>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-button modal-confirm" onclick="confirmarSalida()">Confirmar Salida</button>
-                <button class="modal-button modal-cancel" onclick="cerrarModal()">Cancelar</button>
-            </div>
-        </div>
-    </div>
+    
 
     <script src="registro.js"></script>
 </body>

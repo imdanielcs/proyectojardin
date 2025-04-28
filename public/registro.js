@@ -371,5 +371,68 @@ function eliminarDocente(rut) {
     }
 }
 
+function buscarPorRutAlumno() {
+    const rut = document.getElementById('rutInput').value; // Obtenemos el RUT desde el input
+    
+    // Verificamos si el RUT no está vacío
+    if (!rut) {
+        alert("Por favor ingrese un RUT.");
+        return;
+    }
+
+    fetch(`http://localhost:3000/api/alumnos/${rut}`, {
+        method: 'GET'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo obtener la información del alumno');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Verificamos si encontramos al alumno
+        if (data) {
+            alert("Se han traído los datos del Alumno");
+            mostrarDatosAlumno(data);
+        } else {
+            alert("No se encontraron datos para el alumno");
+            limpiarDatosAlumno();
+        }
+    })
+    .catch(error => {
+        console.error("Error al buscar al alumno y su información", error);
+        alert("No se obtuvo al alumno :(");
+        limpiarDatosAlumno();
+    });
+}
+
+// Función para mostrar los datos del alumno en el HTML
+function mostrarDatosAlumno(data) {
+    const alumnoInfoDiv = document.getElementById('alumnoInfo');
+    
+    // Limpiamos el contenedor antes de mostrar los nuevos datos
+    alumnoInfoDiv.innerHTML = `
+        <h2>Información del Alumno</h2>
+        <p><strong>Nombre:</strong> ${data.nombre} ${data.apellido}</p>
+        <p><strong>RUT:</strong> ${data.rut_alumno}</p>
+        <p><strong>Curso ID:</strong> ${data.curso_id_curso}</p>
+        <p><strong>Apoderado 1:</strong> ${data.nombre_apoderado_uno}</p>
+        <p><strong>Apoderado 2:</strong> ${data.nombre_apoderado_dos}</p>
+        <p><strong>Teléfono 1:</strong> ${data.fono1}</p>
+        <p><strong>Teléfono 2:</strong> ${data.fono2}</p>
+        <p><strong>Email 1:</strong> ${data.email1}</p>
+        <p><strong>Email 2:</strong> ${data.email2}</p>
+        <p><strong>Dirección:</strong> ${data.direccion}</p>
+    `;
+}
+
+// Función para limpiar los datos mostrados en caso de error o no encontrar al alumno
+function limpiarDatosAlumno() {
+    const alumnoInfoDiv = document.getElementById('alumnoInfo');
+    alumnoInfoDiv.innerHTML = "<p>No se encontró información del alumno.</p>";
+}
+
+
+
 
 

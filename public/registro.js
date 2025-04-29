@@ -433,7 +433,6 @@ function buscarPorRutAlumno() {
     .then(data => {
         // Verificamos si encontramos al alumno
         if (data) {
-            alert("Se han traído los datos del Alumno");
             mostrarDatosAlumno(data);
         } else {
             alert("No se encontraron datos para el alumno");
@@ -471,7 +470,13 @@ function mostrarDatosAlumno(data) {
     alumnoInfoDiv.appendChild(botonEnviar);
 
     botonEnviar.addEventListener('click', () => {
-        const informacionAdicional = document.getElementById('InformacionAdicional').value;
+        
+        //asignamos valor espesifico a las variables de envio de correo
+        const nombreAlumno = data.nombre;
+        const nombreApoderado_1 = data.nombre_apoderado_uno;
+        const email = data.email1;
+        const informacionAdicional = data.InformacionAdicional;
+        enviarCorreoComunicacion(email, nombreAlumno, nombreApoderado_1, informacionAdicional);
     });
 }
 
@@ -495,5 +500,31 @@ function mostrarNotificacion(mensaje, tipo) {
     }, 3000);
 }
 
-
+async function enviarCorreoComunicacion(email, nombreAlumno, nombreApoderado_1, informacionAdicional) {
+    alert("entro a la funcion enviarCorreoComunicacion",email, nombreAlumno, nombreApoderado_1, informacionAdicional);
+    const asunto = 'Contacto con apoderado del Jardín Huellita';
+    const mensaje = `
+    <h1>Correo del Jardín Huellita</h1>
+    <p>Estimado apoderado  ${nombreApoderado_1}, nos comunicamos con usted para informarle sobre sircunstancias de su hijo ${nombreAlumno} .</p>
+    <p>Información adicional: ${informacionAdicional}</p>
+    `;
+    alert(mensaje, asunto, email);
+    try {
+      const response = await fetch('/api/enviar-correo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, asunto, mensaje }),
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        console.log('Correo enviado correctamente');
+      } else {
+        console.error('Error al enviar el correo:', data.error);
+      }
+    } catch (err) {
+      console.error('Error al conectarse al servidor:', err.message);
+    }
+}
+  
 

@@ -1,3 +1,8 @@
 node_modules/
 
-config-dev.yml
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+

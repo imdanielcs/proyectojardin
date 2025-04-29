@@ -1,6 +1,8 @@
 const express = require("express");
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
+const { sendMail } = require('./mailjet');
+
 
 
 const app = express();
@@ -13,7 +15,7 @@ app.use(express.static("public"));
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",//DanielDennisse_123
+    password: "DanielDennisse_123",//DanielDennisse_123
     database: "jardin_db"
 });
 
@@ -136,9 +138,7 @@ app.get("/registro", authenticateToken, (req, res) => {
     res.json({ message: "Acceso permitido", user: req.user });
 });
 
-app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+
 
 app.post('/api/docentes', (req, res) => {
     const docente = req.body;
@@ -407,38 +407,18 @@ app.post('/api/salida', (req, res) => {
 });
 
 
-// Endpoint de prueba para Mailjet
-app.get('/api/test-mailjet', (req, res) => {
-    const request = mailjet
-      .post("send", { 'version': 'v3.1' })
-      .request({
-        "Messages": [
-          {
-            "From": {
-              "Email": config.emailSender.email,
-              "Name": config.emailSender.name
-            },
-            "To": [
-              {
-                "Email": "MAILDEPRUEBA",
-                "Name": "Cliente"
-              }
-            ],
-            "Subject": "Prueba de Envío de Correo",
-            "TextPart": "Este es un correo de prueba desde Mailjet.",
-            "HTMLPart": "<h3>¡Prueba Exitosa!</h3><p>Este es un correo de prueba desde Mailjet.</p>"
-          }
-        ]
-      });
-  
-    request
-      .then((result) => {
-        console.log('Correo enviado:', result.body);
-        res.json({ message: 'Correo enviado correctamente' });
-      })
-      .catch((err) => {
-        console.error('Error al enviar el correo:', err.statusCode);
-        res.status(500).json({ error: 'Error al enviar el correo' });
-      });
-  });
+app.post('/api/enviar-correo', async (req, res) => {
+    const { email, asunto, mensaje } = req.body;
+    try {
+      const resultado = await sendMail(email, asunto, mensaje);
+      res.json({ success: true, resultado });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
+});
+
   

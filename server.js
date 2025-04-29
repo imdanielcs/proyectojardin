@@ -152,6 +152,13 @@ app.post('/api/docentes', (req, res) => {
         });
     }
 
+    // Validación del formato del RUT
+    if (!docente.rutDocente.includes('-')) {
+        return res.status(400).send({
+            message: "El RUT debe incluir guión (-). Ejemplo: 12345678-9"
+        });
+    }
+
     console.log("Ingresa los datos del docente a la query");
     const query = "INSERT INTO docente (rut_docente, password, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
@@ -166,6 +173,11 @@ app.post('/api/docentes', (req, res) => {
         docente.cursoDocente
     ], (err, results) => {
         if (err) {
+            if (err.message.includes('Duplicate entry')) {
+                return res.status(400).send({ 
+                    message: "El docente con RUT " + docente.rutDocente + " ya está registrado en el sistema" 
+                });
+            }
             console.error("Error al insertar en la tabla docente:", err);
             return res.status(500).send({ message: "Error al registrar el docente" });
         }

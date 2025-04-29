@@ -247,7 +247,7 @@ function cargarDocentes() {
                     <td>${docente.apellido}</td>
                     <td>${docente.fono}</td>
                     <td>${docente.email}</td>
-                    <td>${docente.curso}</td>
+                    <td>${docente.curso_id_curso}</td>
                 `;
                 // Crear celda para los botones de acción
                 const tdAcciones = document.createElement('td');
@@ -258,7 +258,8 @@ function cargarDocentes() {
                 btnActualizar.classList.add('btn-entrada');
                 console.log("entra rut docente"+ docente.rutDocente);
                 btnActualizar.onclick = () => {
-                    rutDocenteActualizar = docente.rut_docente; // Guardar el RUT del docente a actualizar
+                    rutDocenteActualizar = docente.rut_docente; // Asegurarse de usar rut_docente
+                    console.log("RUT del docente a actualizar:", rutDocenteActualizar);
                     mostrarModal(docente); 
                 };
                 // Crear botón de Eliminar
@@ -285,12 +286,12 @@ function cargarDocentes() {
 
 function mostrarModal(docente) {
     // Rellenar los campos del modal con los datos del docente
-    document.getElementById('nombreDocente').value = docente.nombre;
-    document.getElementById('apellidoDocente').value = docente.apellido;
-    document.getElementById('fonoDocente').value = docente.fono;
-    document.getElementById('emailDocente').value = docente.email;
-    document.getElementById('cursoDocente').value = docente.curso;
-    document.getElementById('direccionDocente').value = docente.direccion || '';
+    document.getElementById('nombreDocente_update').value = docente.nombre;
+    document.getElementById('apellidoDocente_update').value = docente.apellido;
+    document.getElementById('fonoDocente_update').value = docente.fono;
+    document.getElementById('emailDocente_update').value = docente.email;
+    document.getElementById('cursoDocente_update').value = docente.curso_id_curso;
+    document.getElementById('direccionDocente_update').value = docente.direccion || '';
 
     // Mostrar el modal
     document.getElementById('modal-actualizar').style.display = 'block';
@@ -303,13 +304,19 @@ function actualizarDocente() {
         return;
     }
 
+    // Mostrar indicador de carga
+    const btnConfirmar = document.getElementById('btn-confirmar');
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerHTML = 'Actualizando...'
+
+    //obteniendo los datos del docente
     const docenteActualizado = {
-        nombreDocente: document.getElementById('nombreDocente').value,
-        apellidoDocente: document.getElementById('apellidoDocente').value,
-        fonoDocente: document.getElementById('fonoDocente').value,
-        emailDocente: document.getElementById('emailDocente').value,
-        cursoDocente: document.getElementById('cursoDocente').value,
-        direccionDocente: document.getElementById('direccionDocente').value || null
+        nombreDocente: document.getElementById('nombreDocente_update').value,
+        apellidoDocente: document.getElementById('apellidoDocente_update').value,
+        fonoDocente: document.getElementById('fonoDocente_update').value,
+        emailDocente: document.getElementById('emailDocente_update').value,
+        cursoDocente: document.getElementById('cursoDocente_update').value,
+        direccionDocente: document.getElementById('direccionDocente_update').value || null
     };
 
     // Validación de campos
@@ -317,6 +324,8 @@ function actualizarDocente() {
         !docenteActualizado.fonoDocente || !docenteActualizado.emailDocente || 
         !docenteActualizado.cursoDocente) {
         alert("Por favor, completa todos los campos obligatorios.");
+        tnConfirmar.disabled = false;
+        btnConfirmar.innerHTML = 'Confirmar';
         return;
     }
 
@@ -328,17 +337,32 @@ function actualizarDocente() {
         },
         body: JSON.stringify(docenteActualizado)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(text || 'Error en la respuesta del servidor');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
-        alert("Docente actualizado exitosamente.");
-        console.log(data);
+        // Mostrar notificación de éxito
+        mostrarNotificacion('Docente actualizado exitosamente', 'success');
+        
         // Cerrar el modal
         document.getElementById('modal-actualizar').style.display = 'none';
-        cargarDocentes(); // Recargar los docentes en la tabla
+        
+        // Recargar la tabla de docentes
+        cargarDocentes();
     })
     .catch(error => {
         console.error("Error al actualizar docente:", error);
         alert("Hubo un problema al actualizar el docente.");
+    })
+    .finally(() => {
+        // Restaurar el botón
+        btnConfirmar.disabled = false;
+        btnConfirmar.innerHTML = 'Confirmar';
     });
 }
 
@@ -354,19 +378,36 @@ document.getElementById('btn-cancelar').onclick = cancelarActualizacion;
 // Función para eliminar un docente
 function eliminarDocente(rut) {
     if (confirm(`¿Estás seguro de que quieres eliminar al docente con RUT ${rut}?`)) {
+        // Mostrar indicador de carga
+        const btnEliminar = event.target;
+        btnEliminar.disabled = true;
+        btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
         // Realizamos la solicitud DELETE para eliminar al docente
         fetch(`/api/docentes/${rut}`, {
             method: 'DELETE'
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
         .then(data => {
-            alert("Docente eliminado exitosamente.");
-            console.log(data);
-            // Aquí podrías recargar la lista de docentes o actualizar la tabla
+            // Mostrar notificación de éxito
+            mostrarNotificacion('Docente eliminado exitosamente', 'success');
+            
+            // Recargar la tabla de docentes
+            cargarDocentes();
+            BustarcantidadInformacionJardin()
         })
         .catch(error => {
             console.error("Error al eliminar docente:", error);
             alert("Hubo un problema al eliminar el docente.");
+        })
+        .finally(() => {
+            // Restaurar el botón
+            btnEliminar.disabled = false;
+            btnEliminar.innerHTML = 'Eliminar';
         });
     }
 }
@@ -440,7 +481,19 @@ function limpiarDatosAlumno() {
     alumnoInfoDiv.innerHTML = "<p>No se encontró información del alumno.</p>";
 }
 
-
+// Función auxiliar para mostrar notificaciones
+function mostrarNotificacion(mensaje, tipo) {
+    const notificacion = document.createElement('div');
+    notificacion.className = `notificacion ${tipo}`;
+    notificacion.textContent = mensaje;
+    
+    document.body.appendChild(notificacion);
+    
+    // Eliminar la notificación después de 3 segundos
+    setTimeout(() => {
+        notificacion.remove();
+    }, 3000);
+}
 
 
 

@@ -409,8 +409,7 @@ function buscarPorRutAlumno() {
 // Función para mostrar los datos del alumno en el HTML
 function mostrarDatosAlumno(data) {
     const alumnoInfoDiv = document.getElementById('alumnoInfo');
-    
-    // Limpiamos el contenedor antes de mostrar los nuevos datos
+
     alumnoInfoDiv.innerHTML = `
         <h2>Información del Alumno</h2>
         <p><strong>Nombre:</strong> ${data.nombre} ${data.apellido}</p>
@@ -423,7 +422,16 @@ function mostrarDatosAlumno(data) {
         <p><strong>Email 1:</strong> ${data.email1}</p>
         <p><strong>Email 2:</strong> ${data.email2}</p>
         <p><strong>Dirección:</strong> ${data.direccion}</p>
+        <input type="text" id="InformacionAdicional" placeholder="Ingrese la información adicional">
     `;
+
+    const botonEnviar = document.createElement('button');
+    botonEnviar.textContent = 'Enviar Correo';
+    alumnoInfoDiv.appendChild(botonEnviar);
+
+    botonEnviar.addEventListener('click', () => {
+        const informacionAdicional = document.getElementById('InformacionAdicional').value;
+    });
 }
 
 // Función para limpiar los datos mostrados en caso de error o no encontrar al alumno

@@ -475,7 +475,7 @@ function mostrarDatosAlumno(data) {
         const nombreAlumno = data.nombre;
         const nombreApoderado_1 = data.nombre_apoderado_uno;
         const email = data.email1;
-        const informacionAdicional = data.InformacionAdicional;
+        const informacionAdicional = document.getElementById('InformacionAdicional').value;
         enviarCorreoComunicacion(email, nombreAlumno, nombreApoderado_1, informacionAdicional);
     });
 }

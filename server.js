@@ -408,6 +408,7 @@ app.post('/api/salida', (req, res) => {
 
 
 app.post('/api/enviar-correo', async (req, res) => {
+    console.log('REQUEST BODY: ', JSON.stringify(req.body, null, 2));
     const { email, asunto, mensaje } = req.body;
     try {
       const resultado = await sendMail(email, asunto, mensaje);

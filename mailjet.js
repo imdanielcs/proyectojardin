@@ -13,7 +13,7 @@ async function sendMail(to, subject, html) {
       .request({
         Messages: [
           {
-            From: { Email: 'de.reveco@duocuc.cl', Name: 'Jardín Huellita' },
+            From: { Email: process.env.MAILJET_SENDER_EMAIL, Name: 'Jardín Huellita' },
             To: [{ Email: to }],
             Subject: subject,
             HTMLPart: html,

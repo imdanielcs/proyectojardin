@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "jasmine",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +29,11 @@
   "bugs": {
     "url": "https://github.com/imdanielcs/proyectojardin/issues"
   },
-  "homepage": "https://github.com/imdanielcs/proyectojardin#readme"
+  "homepage": "https://github.com/imdanielcs/proyectojardin#readme",
+  "devDependencies": {
+    "jasmine": "^5.7.0",
+    "jest": "^29.7.0",
+    "jsdom": "^26.1.0",
+    "node-fetch": "^3.3.2"
+  }
 }

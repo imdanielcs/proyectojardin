@@ -180,7 +180,7 @@ function inicializarRegistroAlumno() {
 
 function BustarcantidadInformacionJardin(){
     console.log("Función BustarcantidadDocente ejecutada");
-    fetch('http://localhost:3000/api/docentes/count')
+    fetch('/api/docentes/count')
         .then(response => response.json())
         .then(data => {
           // Mostrar el número de docentes en el HTML
@@ -192,7 +192,7 @@ function BustarcantidadInformacionJardin(){
           document.getElementById('total-docentes').textContent = 'Error al cargar';
         });
 
-    fetch('http://localhost:3000/api/alumnos/count')
+    fetch('/api/alumnos/count')
         .then(response => response.json())
         .then(data => {
             // Mostrar el número de docentes en el HTML

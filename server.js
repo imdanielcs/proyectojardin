@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const { sendMail } = require('./mailjet');
 
 
-
 const app = express();
 const port = 3000;
 const SECRET_KEY = process.env.SECRET_KEY || "grupo_3";
@@ -96,12 +95,16 @@ function authenticateToken(req, res, next) {
 
     if (!token) return res.status(403).json({ message: "Acceso denegado" });
 
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.status(403).json({ message: "Token inválido" });
-        req.user = user;
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.usuario = decoded; // Aquí guardamos los datos del token
         next();
-    });
+    } catch (error) {
+        return res.status(403).json({ message: "Token inválido o expirado" });
+    }
 }
+
+//_JWT
 
 //Ruta para obtener el total de docentes en el jardin
 app.get('/api/docentes/count', (req, res) => {
@@ -243,10 +246,18 @@ app.post('/api/alumnos', (req, res) => {
 });
 
 
+//aqui traigo el token para verificar que la profesora tenga los permisos, y consultamos que traiga todos los alumnos que calcen con su curso.
+app.get('/api/alumnos', authenticateToken, (req, res) => {
+    const rut_docente = req.usuario.username; // o req.usuario.rut_docente según el token
 
-app.get('/api/alumnos', (req, res) => {
-    const query = 'SELECT rut_alumno, nombre, apellido, curso_id_curso FROM alumno';
-    connection.query(query, (err, results) => {
+    const query = `
+        SELECT a.rut_alumno, a.nombre, a.apellido, a.curso_id_curso
+        FROM alumno a
+        INNER JOIN docente d ON a.curso_id_curso = d.curso_id_curso
+        WHERE d.rut_docente = ?
+    `;
+
+    connection.query(query, [rut_docente], (err, results) => {
         if (err) {
             console.error('Error al obtener los alumnos:', err);
             return res.status(500).json({ error: 'Error al obtener los alumnos' });
@@ -254,6 +265,7 @@ app.get('/api/alumnos', (req, res) => {
         res.json(results);
     });
 });
+
 
 //traer al alumno y su informacion por rut:
 app.get('/api/alumnos/:rut',(req, res)=> {
@@ -368,9 +380,12 @@ app.delete('/api/docentes/:rut', (req, res) => {
 });
 
 app.post('/api/ingreso', (req, res) => {
-    const { rut_alumno, id_curso, estado, hora } = req.body;
+    console.log("Datos recibidos:", req.body); 
 
+    const { rut_alumno, id_curso, estado, hora } = req.body;
+    
     if (!rut_alumno || !id_curso || !estado || !hora) {
+        console.log("Campos faltantes");
         return res.status(400).send({ message: "Todos los campos son obligatorios" });
     }
 
@@ -381,12 +396,14 @@ app.post('/api/ingreso', (req, res) => {
 
     connection.query(query, [rut_alumno, id_curso, estado, hora], (err, results) => {
         if (err) {
-            console.error("Error al insertar en la tabla ingreso:", err);
+            console.error("Error al insertar en la tabla ingreso:", err);  
             return res.status(500).send({ message: "Error al registrar la asistencia" });
         }
+        console.log("Insert exitoso:", results);  
         res.status(201).send({ message: "Asistencia registrada correctamente" });
     });
 });
+
 
 app.post('/api/salida', (req, res) => {
     const { rut_alumno, id_curso, estado, hora } = req.body;

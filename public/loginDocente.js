@@ -16,6 +16,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         if (response.ok && data.token) {
             localStorage.setItem("authToken", data.token);
+            console.log(data.value);
             window.location.href = "/dashboardDocente.html"; 
         } else {
             errorMessage.textContent = data.message || "Usuario o contraseña incorrectos";

@@ -421,7 +421,7 @@ function buscarPorRutAlumno() {
         return;
     }
 
-    fetch(`http://localhost:3000/api/alumnos/${rut}`, {
+    fetch(`/api/alumnos/${rut}`, {
         method: 'GET'
     })
     .then(response => {

@@ -501,14 +501,13 @@ function mostrarNotificacion(mensaje, tipo) {
 }
 
 async function enviarCorreoComunicacion(email, nombreAlumno, nombreApoderado_1, informacionAdicional) {
-    alert("entro a la funcion enviarCorreoComunicacion",email, nombreAlumno, nombreApoderado_1, informacionAdicional);
+    alert("Correo enviado exitosamente");
     const asunto = 'Contacto con apoderado del Jardín Huellita';
     const mensaje = `
     <h1>Correo del Jardín Huellita</h1>
     <p>Estimado apoderado  ${nombreApoderado_1}, nos comunicamos con usted para informarle sobre sircunstancias de su hijo ${nombreAlumno} .</p>
     <p>Información adicional: ${informacionAdicional}</p>
     `;
-    alert(mensaje, asunto, email);
     try {
       const response = await fetch('/api/enviar-correo', {
         method: 'POST',
@@ -527,4 +526,44 @@ async function enviarCorreoComunicacion(email, nombreAlumno, nombreApoderado_1, 
     }
 }
   
+
+// Objeto para guardar el estado de asistencia de cada alumno por su RUT
+const estadoAsistencia = "";
+
+
+function cargarAlumnos(estado) {
+    fetch(`/api/alumno/asistencia/${estado}`, {
+        method: 'GET'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo obtener la información del alumno');
+        }
+        return response.json();
+    })
+    .then(alumnos => {
+        const tabla = document.getElementById('tabla-body');
+        tabla.innerHTML = '';
+
+        alumnos.forEach(alumno => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${alumno.rut_alumno}</td>
+                <td>${alumno.nombre}</td>
+                <td>${alumno.apellido}</td>
+                <td>${alumno.curso}</td>
+            `;
+            tabla.appendChild(fila);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function mostrarAsistieron() {
+    cargarAlumnos("asistio");
+}
+
+function mostrarNoAsistieron() {
+    cargarAlumnos("no_asistio");
+}
 

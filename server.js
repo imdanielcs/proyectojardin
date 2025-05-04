@@ -3,7 +3,7 @@ const express = require("express");
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
 const { sendMail } = require('./mailjet');
-
+process.env.TZ = 'America/Santiago';
 
 const app = express();
 const port = 3000;
@@ -14,11 +14,11 @@ app.use(express.static("public"));
 
 
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 });
 
 connection.connect(err => {
@@ -33,7 +33,7 @@ connection.connect(err => {
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
-   
+
     const query = "SELECT * FROM admin WHERE username = ?";
     connection.query(query, [username], (err, results) => {
         if (err) {
@@ -47,7 +47,7 @@ app.post("/login", (req, res) => {
 
         const user = results[0];
 
-        
+
         if (password !== user.password) {
             return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
         }
@@ -62,7 +62,7 @@ app.post("/login", (req, res) => {
 app.post("/login-docente", (req, res) => {
     const { rut_docente, password } = req.body;
 
-   
+
     const query = "SELECT * FROM docente WHERE rut_docente = ?";
     connection.query(query, [rut_docente], (err, results) => {
         if (err) {
@@ -76,7 +76,7 @@ app.post("/login-docente", (req, res) => {
 
         const user = results[0];
 
-        
+
         if (password !== user.password) {
             return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
         }
@@ -109,31 +109,31 @@ function authenticateToken(req, res, next) {
 //Ruta para obtener el total de docentes en el jardin
 app.get('/api/docentes/count', (req, res) => {
     const query = 'SELECT COUNT(*) AS total FROM docente';
-    
+
     connection.query(query, (err, results) => {
-      if (err) {
-        console.error('Error en la consulta:', err);
-        return res.status(500).json({ error: 'Error en la base de datos' });
-      }
-  
-      const totalDocentes = results[0].total;
-      res.json({ totalDocentes });
-      console.log("cantidad de profesores:" + totalDocentes);
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(500).json({ error: 'Error en la base de datos' });
+        }
+
+        const totalDocentes = results[0].total;
+        res.json({ totalDocentes });
+        console.log("cantidad de profesores:" + totalDocentes);
     });
-  });
+});
 
 //Ruta para obtener el total de alumnos en el jardin
 app.get('/api/alumnos/count', (req, res) => {
     const query = 'SELECT COUNT(*) AS total FROM alumno';
     connection.query(query, (err, results) => {
-    if (err) {
-        console.error('Error en la consulta:', err);
-        return res.status(500).json({ error: 'Error en la base de datos' });
-    }
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(500).json({ error: 'Error en la base de datos' });
+        }
 
-    const totalAlumnos = results[0].total;
-    res.json({ totalAlumnos });
-    console.log("cantidad de alumnos:" + totalAlumnos);
+        const totalAlumnos = results[0].total;
+        res.json({ totalAlumnos });
+        console.log("cantidad de alumnos:" + totalAlumnos);
     });
 });
 
@@ -151,7 +151,7 @@ app.post('/api/docentes', (req, res) => {
     console.log("Datos recibidos para docente:", docente);
 
     // Validación de campos requeridos
-    if (!docente.rutDocente || !docente.nombreDocente || !docente.apellidoDocente || 
+    if (!docente.rutDocente || !docente.nombreDocente || !docente.apellidoDocente ||
         !docente.fonoDocente || !docente.emailDocente || !docente.cursoDocente) {
         return res.status(400).send({
             message: "Los campos RUT, nombre, apellido, teléfono, curso y email son obligatorios"
@@ -167,7 +167,7 @@ app.post('/api/docentes', (req, res) => {
 
     console.log("Ingresa los datos del docente a la query");
     const query = "INSERT INTO docente (rut_docente, password, nombre, apellido, fono, email, direccion, curso_id_curso) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    
+
     connection.query(query, [
         docente.rutDocente,
         docente.password,
@@ -180,8 +180,8 @@ app.post('/api/docentes', (req, res) => {
     ], (err, results) => {
         if (err) {
             if (err.message.includes('Duplicate entry')) {
-                return res.status(400).send({ 
-                    message: "El docente con RUT " + docente.rutDocente + " ya está registrado en el sistema" 
+                return res.status(400).send({
+                    message: "El docente con RUT " + docente.rutDocente + " ya está registrado en el sistema"
                 });
             }
             console.error("Error al insertar en la tabla docente:", err);
@@ -194,15 +194,15 @@ app.post('/api/docentes', (req, res) => {
 
 app.post('/api/alumnos', (req, res) => {
     const alumno = req.body;
-    
+
     console.log("Datos recibidos para alumno:", alumno);
 
     // Validación básica de campos requeridos
-    if (!alumno.rutAlumno || !alumno.nombreAlumno || !alumno.apellidoAlumno || 
-        !alumno.cursoAlumno || !alumno.rutApoderadoUno || !alumno.nombreApoderadoUno || 
+    if (!alumno.rutAlumno || !alumno.nombreAlumno || !alumno.apellidoAlumno ||
+        !alumno.cursoAlumno || !alumno.rutApoderadoUno || !alumno.nombreApoderadoUno ||
         !alumno.fono1 || !alumno.email1) {
-        return res.status(400).send({ 
-            message: "Los campos RUT, nombre, apellido, curso, y datos del apoderado principal (RUT, nombre, teléfono y email) son obligatorios" 
+        return res.status(400).send({
+            message: "Los campos RUT, nombre, apellido, curso, y datos del apoderado principal (RUT, nombre, teléfono y email) son obligatorios"
         });
     }
 
@@ -268,31 +268,67 @@ app.get('/api/alumnos', authenticateToken, (req, res) => {
 
 
 //traer al alumno y su informacion por rut:
-app.get('/api/alumnos/:rut',(req, res)=> {
+app.get('/api/alumnos/:rut', (req, res) => {
     const { rut } = req.params; //tomando el rut de la url
     const query = 'SELECT rut_alumno, nombre, apellido, curso_id_curso, nombre_apoderado_uno, nombre_apoderado_dos, fono1, fono2, email1 ,email2, direccion FROM alumno WHERE rut_alumno = ?';
 
-    connection.query(query, [rut], (err, results)=>{
-        if(err){
+    connection.query(query, [rut], (err, results) => {
+        if (err) {
             console.error('Error al obtener el alumno: ', err);
-            return res.status(500).json({error:'Error al obtener información del alumno'});
+            return res.status(500).json({ error: 'Error al obtener información del alumno' });
         }
         //cuando no encuentre al alumno
-        if(results.length === 0){
-            return res.status(404).json({error: 'Alumno no encontrado'});
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Alumno no encontrado' });
         }
         //si todo sale bien, devuelve al alumno encontrado
         res.json(results[0]);
         // Esto imprime los detalles del alumno encontrado (información en consola)
         console.log("Alumno y su información: ", results[0]);
+
+    });
+});
+
+app.get('/api/alumno/asistencia/:estado', (req, res) => {
+    const { estado } = req.params;
+    console.log("la denis estuvo aqui 1");
+
+    const today = new Date();
+
+    // Ajuste de la zona horaria manual (para la zona horaria de Chile)
+    const offset = -3;  // Zona horaria de Chile: UTC-3
+    today.setHours(today.getHours() + offset);
     
+    const todayInChile = today.toISOString().split('T')[0];
+
+    console.log(todayInChile);
+    // Consulta SQL con la fecha como texto
+    const query = `
+        SELECT DISTINCT a.rut_alumno, a.nombre, a.apellido, a.curso_id_curso AS curso, d.estado
+        FROM alumno a
+        INNER JOIN ingreso d ON a.curso_id_curso = d.id_curso
+        WHERE d.estado = ?
+          AND DATE(d.hora) = ?
+    `;
+
+    console.log("la denis estuvo aqui 2");
+
+    // Ejecutar la consulta
+    connection.query(query, [estado, todayInChile], (err, results) => {
+        if (err) {
+            console.error('Error al obtener los alumnos:', err);
+            return res.status(500).json({ error: 'Error al obtener los alumnos' });
+        }
+        res.json(results);
     });
 });
 
 
 
 
-app.get('/api/docentes',(req, res) => {
+
+
+app.get('/api/docentes', (req, res) => {
     const query = 'SELECT rut_docente, nombre, apellido, fono, email, curso_id_curso FROM docente';
     connection.query(query, (err, results) => {
 
@@ -316,7 +352,7 @@ app.put('/api/docentes/:rut', (req, res) => {
     console.log("Datos recibidos para actualizar al docente:", docente);
 
     // Validación de campos requeridos
-    if (!docente.nombreDocente || !docente.apellidoDocente || 
+    if (!docente.nombreDocente || !docente.apellidoDocente ||
         !docente.fonoDocente || !docente.emailDocente || !docente.cursoDocente) {
         return res.status(400).send({
             message: "Los campos nombre, apellido, teléfono, curso y email son obligatorios"
@@ -348,7 +384,7 @@ app.put('/api/docentes/:rut', (req, res) => {
             console.error("Error al actualizar el docente:", err);
             return res.status(500).send({ message: "Error al actualizar el docente" });
         }
-        
+
         if (results.affectedRows === 0) {
             return res.status(404).send({ message: "Docente no encontrado" });
         }
@@ -369,7 +405,7 @@ app.delete('/api/docentes/:rut', (req, res) => {
             console.error("Error al eliminar el docente:", err);
             return res.status(500).send({ message: "Error al eliminar el docente" });
         }
-        
+
         if (results.affectedRows === 0) {
             return res.status(404).send({ message: "Docente no encontrado" });
         }
@@ -380,10 +416,10 @@ app.delete('/api/docentes/:rut', (req, res) => {
 });
 
 app.post('/api/ingreso', (req, res) => {
-    console.log("Datos recibidos:", req.body); 
+    console.log("Datos recibidos:", req.body);
 
     const { rut_alumno, id_curso, estado, hora } = req.body;
-    
+
     if (!rut_alumno || !id_curso || !estado || !hora) {
         console.log("Campos faltantes");
         return res.status(400).send({ message: "Todos los campos son obligatorios" });
@@ -396,10 +432,10 @@ app.post('/api/ingreso', (req, res) => {
 
     connection.query(query, [rut_alumno, id_curso, estado, hora], (err, results) => {
         if (err) {
-            console.error("Error al insertar en la tabla ingreso:", err);  
+            console.error("Error al insertar en la tabla ingreso:", err);
             return res.status(500).send({ message: "Error al registrar la asistencia" });
         }
-        console.log("Insert exitoso:", results);  
+        console.log("Insert exitoso:", results);
         res.status(201).send({ message: "Asistencia registrada correctamente" });
     });
 });
@@ -431,10 +467,10 @@ app.post('/api/enviar-correo', async (req, res) => {
     console.log('REQUEST BODY: ', JSON.stringify(req.body, null, 2));
     const { email, asunto, mensaje } = req.body;
     try {
-      const resultado = await sendMail(email, asunto, mensaje);
-      res.json({ success: true, resultado });
+        const resultado = await sendMail(email, asunto, mensaje);
+        res.json({ success: true, resultado });
     } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
@@ -442,4 +478,3 @@ app.listen(port, () => {
     console.log(`Servidor corriendo`);
 });
 
-  

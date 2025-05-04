@@ -162,7 +162,7 @@
                             <label for="direccionApoderado">Dirección:</label>
                             <input type="text" id="direccionApoderado" name="direccionApoderado" required>
                         </div>
-                        <button type="submit" class="login-button">Registrar Familia</button>
+                        <button type="submit" class="registrar-button">Registrar Familia</button>
                     </form>
                 <br>
                 </div>
@@ -224,25 +224,46 @@
                     </div>
                 </div>
 
-                <!-- Formulario de Comunicación con Apoderado -->
-            <div id="comunicar-apoderado-form" class="form-section">
-                <h1>Comunicación con Apoderado</h1>
-                <form id="formComunicarApoderado">
-                    <h2>Buscar Alumno por RUT</h2>
-                    <input type="text" id="rutInput" placeholder="Ingrese el RUT" />
-                    <button type="button" onclick="buscarPorRutAlumno(rutInput)">Buscar</button>
+                <!-- asistencia-->
+                <div id="asistencia-curso-form" class="form-section">
+                    <h1>Asistencia Jardín</h1>
+                    <table style="width: 100%; border-spacing: 0 15px;" id="tabla-alumnos">
+                        <thead>
+                            <tr>
+                                <th style="padding: 12px; text-align: left;">RUT</th>
+                                <th style="padding: 12px; text-align: left;">Nombre</th>
+                                <th style="padding: 12px; text-align: left;">Apellido</th>
+                                <th style="padding: 12px; text-align: left;">Curso</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-body">
+                            <!-- Las filas se agregarán aquí dinámicamente con JavaScript -->
+                        </tbody>
+                    </table>
 
-                    <div id="alumnoInfo" style="margin: 30px;">
-                        <!-- Datos del alumno -->
-                        <p style="padding: 12px;width: 100%;"><p>
-                        <div id="InformacionAdicional" style="margin: 60px;">
-                            <input type="text" id="InformacionAdicional" placeholder="Ingrese la información adicional">
+                    <button class="modal-button modal-confirm" onclick="mostrarAsistieron()">Ver Asistieron</button>
+                    <button class="modal-button modal-cancel" onclick="mostrarNoAsistieron()">Ver No Asistieron</button>
+
+                    <div id="resultado-asistencia"></div>
+                </div>
+
+                <!-- Formulario de Comunicación con Apoderado -->
+                <div id="comunicar-apoderado-form" class="form-section">
+                    <h1>Comunicación con Apoderado</h1>
+                    <form id="formComunicarApoderado">
+                        <h2>Buscar Alumno por RUT</h2>
+                        <input type="text"  id="rutInput" placeholder="Ingrese el RUT" />
+                        <button type="button" class="modal-button modal-confirm" onclick="buscarPorRutAlumno(rutInput)">Buscar</button>
+
+                        <div id="alumnoInfo" style="margin: 30px;">
+                            <!-- Datos del alumno -->
+                            <p style="padding: 12px;width: 100%;"><p>
+                            <div id="InformacionAdicional" style="margin: 60px;">
+                                <input type="text" id="InformacionAdicional" placeholder="Ingrese la información adicional">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <button type="submit" class="login-button">Enviar Comunicación</button>
-                </form>
-            </div>
+                    </form>
+                </div>
                 
             </div>
         </div>

@@ -284,6 +284,16 @@ body {
     transition: background-color 0.3s;
 }
 
+.btn-entrada1 {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
 .btn-salida:hover {
     background-color: #c0392b;
 }
